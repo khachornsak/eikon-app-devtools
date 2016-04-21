@@ -1,0 +1,12 @@
+{
+  "name": "eikon-app-debugger",
+  "devDependencies": {
+    "AdminLTE": "admin-lte#~2.3.2",
+    "eikon-jet": "git@git.sami.int.thomsonreuters.com:upg_strategic_development/bower-jet.git#1.12.3",
+    "file-saver": "*",
+    "font-awesome": "~4.5.0",
+    "jquery": "~2.2.1",
+    "lodash": "~4.6.1",
+    "moment": "~2.12.0"
+  }
+}
