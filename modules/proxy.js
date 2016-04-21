@@ -14,6 +14,7 @@ var socket;
 var responseMap = {};
 var onResponse = function (id, headers, response) {
   var res = responseMap[id];
+  if (!res) return;
   delete responseMap[id];
   _(headers)
     .omit(function (v, k) { return /^access/.test(k); })
