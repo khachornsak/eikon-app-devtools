@@ -1,10 +1,7 @@
 {
   "name": "eikon-app-debugger",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "main": "index.js",
-  "files": [
-    "modules/"
-  ],
   "scripts": {
     "lint": "eslint ."
   },
