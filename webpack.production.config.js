@@ -1,5 +1,4 @@
 const path = require('path');
-const LiveReloadPlugin = require('webpack-livereload-plugin');
 const webpack = require('webpack');
 
 module.exports = {
@@ -24,6 +23,11 @@ module.exports = {
   },
   plugins: [
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new LiveReloadPlugin({ port: 35728 }),
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {
+        warnings: false,
+        screw_ie8: true,
+      },
+    }),
   ],
 };

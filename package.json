@@ -7,6 +7,7 @@
     "modules/"
   ],
   "scripts": {
+    "build": "webpack -p --config webpack.production.config.js",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -20,9 +21,15 @@
     "babel-loader": "~6.2.4",
     "babel-polyfill": "~6.7.4",
     "babel-preset-es2015": "~6.6.0",
+    "css-loader": "^0.23.1",
     "eslint": "~2.8.0",
     "eslint-config-airbnb": "~7.0.0",
     "express": "~4.13.4",
+    "file-loader": "~0.8.5",
+    "less-loader": "~2.2.3",
+    "moment": "~2.12.0",
+    "node-sass": "~3.5.3",
+    "style-loader": "~0.13.1",
     "webpack": "~1.13.0",
     "webpack-dev-middleware": "~1.6.1",
     "webpack-livereload-plugin": "~0.8.1"

@@ -1,4 +1,5 @@
 require('babel-polyfill');
+require('./style.scss');
 
 const socket = require('socket.io-client')('http://localhost:3000');
 

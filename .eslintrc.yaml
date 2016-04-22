@@ -3,8 +3,6 @@ rules:
   no-param-reassign: 0
   prefer-const: 0
 globals:
-  _: false
   $: false
   JET: false
-  moment: false
   saveAs: fasle

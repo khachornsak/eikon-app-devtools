@@ -1,4 +1,6 @@
+const _ = require('lodash');
 const md5 = require('md5');
+const moment = require('moment');
 
 const host = window.location.hostname === 'localhost' ?
   'http://emea.apps.cp.thomsonreuters.com' : '';

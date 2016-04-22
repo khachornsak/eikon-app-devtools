@@ -1,3 +1,6 @@
+const _ = require('lodash');
+const moment = require('moment');
+
 let socket;
 
 const $head = $('#head');
