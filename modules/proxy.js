@@ -32,7 +32,7 @@ module.exports = function (options) {
 
   return function (req, res, next) {
     var id;
-    if (req.path === '/apps/udf/msf') {
+    if (req.path.toLowerCase() === '/apps/udf/msf') {
       id = _.uniqueId('udf');
       responseMap[id] = res;
       socket.emit('udf-request', id, req.headers, req.body, _.get(options, 'udf') || null);
@@ -41,7 +41,8 @@ module.exports = function (options) {
 
     if (/service/i.test(req.path) ||
       /^\/ta/i.test(req.path) ||
-      /^\/Explorer/.test(req.path)) {
+      /^\/Explorer/.test(req.path) ||
+      /AjaxHandler/i.test(req.path)) {
       id = _.uniqueId('service');
       responseMap[id] = res;
       if (req.method === 'POST') {
