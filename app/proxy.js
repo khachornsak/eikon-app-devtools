@@ -76,6 +76,21 @@ const proxy = {
         size: resHeaders['content-length'],
       });
       socket.emit('proxy-response', id, resHeaders, response);
+    })
+    .fail((xhr) => {
+      if (xhr.responseText) {
+        try {
+          let response = eval(xhr.responseText);
+          let resHeaders = getHeaders(xhr.getAllResponseHeaders());
+          updateRow(id, {
+            stop: new Date().getTime(),
+            size: resHeaders['content-length'],
+          });
+          socket.emit('proxy-response', id, resHeaders, response);
+        } catch (e) {
+          // do nothing
+        }
+      }
     });
   },
 };

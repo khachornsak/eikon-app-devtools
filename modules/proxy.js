@@ -21,7 +21,7 @@ var onResponse = function (id, headers, response) {
     .forEach(headers, function (v, k) {
       res.setHeader(k, v);
     });
-  res.send(response);
+  res.end(JSON.stringify(response));
 };
 
 module.exports = function (options) {
@@ -32,23 +32,23 @@ module.exports = function (options) {
 
   return function (req, res, next) {
     var id;
-    if (req.path.toLowerCase() === '/apps/udf/msf') {
+    if (req.url.toLowerCase() === '/apps/udf/msf') {
       id = _.uniqueId('udf');
       responseMap[id] = res;
       socket.emit('udf-request', id, req.headers, req.body, _.get(options, 'udf') || null);
       return;
     }
 
-    if (/service/i.test(req.path) ||
-      /^\/ta/i.test(req.path) ||
-      /^\/Explorer/.test(req.path) ||
-      /AjaxHandler/i.test(req.path)) {
+    if (/service/i.test(req.url) ||
+      /^\/ta/i.test(req.url) ||
+      /^\/Explorer/.test(req.url) ||
+      /AjaxHandler/i.test(req.url)) {
       id = _.uniqueId('service');
       responseMap[id] = res;
       if (req.method === 'POST') {
-        socket.emit('proxy-request-post', id, req.path, req.headers, req.body);
+        socket.emit('proxy-request-post', id, req.url, req.headers, req.body);
       } else {
-        socket.emit('proxy-request-get', id, req.path, req.headers, req.query);
+        socket.emit('proxy-request-get', id, req.url, req.headers, req.query);
       }
       return;
     }
