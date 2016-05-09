@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const debug = require('debug');
 const express = require('express');
 const http = require('http');
 
@@ -24,9 +23,7 @@ const io = require('socket.io')(server);
 
 const port = process.env.PORT || 3000;
 
-server.listen(port, () => {
-  debug('Server listening at port %d', port);
-});
+server.listen(port);
 
 const events = [
   'download',
