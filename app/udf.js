@@ -51,8 +51,9 @@ const usf = {
     socket.on('udf-request', (id, headers, body, options) => {
       let useCache = _.get(options, 'cache');
       let cacheKey;
-      let service = body.entity || body.Entity;
-      service = service.e || service.E;
+      let service = body.entity || body.Entity || {};
+      service = service.e || service.E || 'batch';
+
       addRow(id);
       updateRow(id, {
         time: moment().format('HH:mm:ss.SSS'),

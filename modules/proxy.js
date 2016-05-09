@@ -21,7 +21,12 @@ var onResponse = function (id, headers, response) {
     .forEach(headers, function (v, k) {
       res.setHeader(k, v);
     });
-  res.end(JSON.stringify(response));
+
+  if (res.send) {
+    res.send(response);
+  } else {
+    res.end(JSON.stringify(response));
+  }
 };
 
 module.exports = function (options) {
