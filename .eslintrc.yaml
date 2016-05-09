@@ -1,4 +1,4 @@
-extends: "airbnb/base"
+extends: "airbnb-base"
 rules:
   no-param-reassign: 0
   prefer-const: 0
