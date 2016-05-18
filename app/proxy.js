@@ -58,10 +58,12 @@ const proxy = {
       start: new Date().getTime(),
       path,
     });
+
     let dataType = null;
-    if (/contentmenubar/.test(path)) {
-      dataType = 'text';
-    }
+
+    if (/contentmenubar/.test(path)) dataType = 'text';
+    if (method === 'get') data = null;
+
     $.ajax({
       url: `${host}${path}`,
       method,
