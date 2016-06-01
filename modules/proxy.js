@@ -37,7 +37,7 @@ module.exports = function (options) {
 
   return function (req, res, next) {
     var id;
-    if (req.url.toLowerCase() === '/apps/udf/msf') {
+    if (_.startsWith(req.url.toLowerCase(), '/apps/udf/msf')) {
       id = _.uniqueId('udf');
       responseMap[id] = res;
       socket.emit('udf-request', id, req.headers, req.body, _.get(options, 'udf') || null);
