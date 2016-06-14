@@ -11,30 +11,30 @@
   display: none;
 }
 
-.content-wrapper[show=quotes] {
+.content-wrapper[show=udf] {
   transform: translateX(0);
 }
-.content-wrapper[show=quotes] > #content-quotes > .content {
+.content-wrapper[show=udf] > #content-udf > .content {
   display: block;
 }
 
-.content-wrapper[show=quotes2] {
+.content-wrapper[show=proxy] {
   transform: translateX(-100%);
 }
-.content-wrapper > #content-quotes2 {
+.content-wrapper > #content-proxy {
   left: 100%;
 }
-.content-wrapper[show=quotes2] > #content-quotes2 > .content {
+.content-wrapper[show=proxy] > #content-proxy > .content {
   display: block;
 }
 
-.content-wrapper[show=news] {
+.content-wrapper[show=quotes] {
   transform: translateX(-200%);
 }
-.content-wrapper > #content-news {
+.content-wrapper > #content-quotes {
   left: 200%;
 }
-.content-wrapper[show=news] > #content-news > .content {
+.content-wrapper[show=quotes] > #content-quotes > .content {
   display: block;
 }
 
@@ -45,26 +45,6 @@
   left: 300%;
 }
 .content-wrapper[show=feed] > #content-feed > .content {
-  display: block;
-}
-
-.content-wrapper[show=udf] {
-  transform: translateX(-400%);
-}
-.content-wrapper > #content-udf {
-  left: 400%;
-}
-.content-wrapper[show=udf] > #content-udf > .content {
-  display: block;
-}
-
-.content-wrapper[show=proxy] {
-  transform: translateX(-500%);
-}
-.content-wrapper > #content-proxy {
-  left: 500%;
-}
-.content-wrapper[show=proxy] > #content-proxy > .content {
   display: block;
 }
 
