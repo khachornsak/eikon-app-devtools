@@ -8,12 +8,13 @@
   vars-on-top
 */
 
-module.exports = function () {
-  var _ = require('lodash');
-  var http = require('http');
+var _ = require('lodash');
+var http = require('http');
+var socketio = require('socket.io');
 
+module.exports = function () {
   var server = new http.Server();
-  var io = require('socket.io')(server);
+  var io = socketio(server);
   var port = 3000;
 
   server.listen(port);
@@ -53,4 +54,4 @@ module.exports = function () {
       });
     });
   });
-}
+};

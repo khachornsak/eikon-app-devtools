@@ -82,7 +82,9 @@ const proxy = {
     .fail((xhr) => {
       if (xhr.responseText) {
         try {
+          /* eslint-disable no-eval */
           let response = eval(xhr.responseText);
+          /* eslint-enable no-eval */
           let resHeaders = getHeaders(xhr.getAllResponseHeaders());
           updateRow(id, {
             stop: new Date().getTime(),
