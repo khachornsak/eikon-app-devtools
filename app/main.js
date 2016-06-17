@@ -31,7 +31,7 @@ socket.on('download', (filename, data) => {
 
 $('#site').text(require('../modules/env'));
 $('#feedback').click(() => {
-  let to = 'CorporateBondPricesFeedback@Thomsonreuters.com';
+  let to = 'pirasis.leelatanon@thomsonreuters.com';
   let subject = 'Feedback on Eikon App Devtools';
   window.location.href = `mailto:${to}?Subject=${subject}`;
 });
