@@ -30,30 +30,37 @@ var onResponse = function (id, headers, response) {
 };
 
 module.exports = function (options) {
-  options = options || {};
+  var customUrlRegExp;
+
   socket = socketClient.connect(options.socketUrl || 'http://localhost:3000');
   socket.on('udf-response', onResponse);
   socket.on('proxy-response', onResponse);
 
+  customUrlRegExp = _.get(options, 'customUrlRegExp');
+  if (!_.isString(customUrlRegExp)) customUrlRegExp = null;
+
   return function (req, res, next) {
+    var url = req.url;
     var id;
-    if (_.startsWith(req.url.toLowerCase(), '/apps/udf/msf')) {
+
+    if (_.startsWith(url.toLowerCase(), '/apps/udf/msf')) {
       id = _.uniqueId('udf');
       responseMap[id] = res;
       socket.emit('udf-request', id, req.headers, req.body, _.get(options, 'udf') || null);
       return;
     }
 
-    if (/service/i.test(req.url) ||
-      /^\/ta/i.test(req.url) ||
-      /^\/Explorer/.test(req.url) ||
-      /AjaxHandler/i.test(req.url)) {
+    if (/service/i.test(url) ||
+      /^\/ta/i.test(url) ||
+      /^\/Explorer/.test(url) ||
+      /AjaxHandler/i.test(url) ||
+      (customUrlRegExp && customUrlRegExp.test(url))) {
       id = _.uniqueId('service');
       responseMap[id] = res;
       if (req.method === 'POST') {
-        socket.emit('proxy-request-post', id, req.url, req.headers, req.body);
+        socket.emit('proxy-request-post', id, url, req.headers, req.body);
       } else {
-        socket.emit('proxy-request-get', id, req.url, req.headers, req.query);
+        socket.emit('proxy-request-get', id, url, req.headers, req.query);
       }
       return;
     }
