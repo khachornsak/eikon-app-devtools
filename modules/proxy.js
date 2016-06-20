@@ -17,8 +17,8 @@ var onResponse = function (id, headers, response) {
   if (!res) return;
   delete responseMap[id];
   _(headers)
-    .omit(function (v, k) { return /^access/.test(k); })
-    .forEach(headers, function (v, k) {
+    .omit(function (v, k) { return /^access|^content/i.test(k); })
+    .forEach(function (v, k) {
       res.setHeader(k, v);
     });
 
