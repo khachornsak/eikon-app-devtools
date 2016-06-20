@@ -53,6 +53,7 @@ module.exports = function (options) {
     if (/service/i.test(url) ||
       /^\/ta/i.test(url) ||
       /^\/Explorer/.test(url) ||
+      /contentmenubar/i.test(url) ||
       /AjaxHandler/i.test(url) ||
       (customUrlRegExp && customUrlRegExp.test(url))) {
       id = _.uniqueId('service');
