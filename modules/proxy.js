@@ -12,15 +12,18 @@ var socketClient = require('socket.io-client');
 var socket;
 
 var responseMap = {};
-var onResponse = function (id, headers, response) {
+var onResponse = function (options, id, headers, response) {
   var res = responseMap[id];
   if (!res) return;
   delete responseMap[id];
-  _(headers)
-    .omit(function (v, k) { return /^access|^content/i.test(k); })
-    .forEach(function (v, k) {
-      res.setHeader(k, v);
-    });
+
+  if (_.get(options, 'headers') !== false) {
+    _(headers)
+      .omitBy(function (v, k) { return /^access|^content/i.test(k); })
+      .forEach(function (v, k) {
+        res.setHeader(k, v);
+      });
+  }
 
   if (res.send) {
     res.send(response);
@@ -33,8 +36,8 @@ module.exports = function (options) {
   var customUrlRegExp;
 
   socket = socketClient.connect(options.socketUrl || 'http://localhost:3000');
-  socket.on('udf-response', onResponse);
-  socket.on('proxy-response', onResponse);
+  socket.on('udf-response', _.partial(onResponse, options));
+  socket.on('proxy-response', _.partial(onResponse, options));
 
   customUrlRegExp = _.get(options, 'customUrlRegExp');
   if (!_.isString(customUrlRegExp)) customUrlRegExp = null;
