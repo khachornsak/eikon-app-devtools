@@ -1,4 +1,5 @@
-const moment = require('moment');
+import $ from 'jquery';
+import moment from 'moment';
 
 let $head;
 let $display;

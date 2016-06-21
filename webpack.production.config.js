@@ -12,7 +12,7 @@ module.exports = {
   recordsOutputPath: path.join(__dirname, 'records.json'),
   module: {
     loaders: [
-      { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
+      { test: /\.js$/, exclude: /node_modules|bower_components/, loader: 'babel-loader' },
       { test: /\.scss$/, loaders: ['style', 'css', 'sass'] },
       { test: /\.(eot|svg|ttf|woff|woff2)/, loader: 'file?name=public/fonts/[name].[ext]' },
       { test: /\.(png|jpg)$/, loader: 'url?limit=8192' },

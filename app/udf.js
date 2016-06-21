@@ -1,6 +1,7 @@
-const _ = require('lodash');
-const md5 = require('md5');
-const moment = require('moment');
+import _ from 'lodash';
+import $ from 'jquery';
+import md5 from 'md5';
+import moment from 'moment';
 
 const host = window.location.hostname === 'localhost' ?
   'http://emea.apps.cp.thomsonreuters.com' : '';

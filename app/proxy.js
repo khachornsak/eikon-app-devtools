@@ -1,5 +1,6 @@
-const _ = require('lodash');
-const moment = require('moment');
+import _ from 'lodash';
+import $ from 'jquery';
+import moment from 'moment';
 
 let socket;
 

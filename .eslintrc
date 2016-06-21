@@ -4,6 +4,5 @@ rules:
   no-param-reassign: 0
   prefer-const: 0
 globals:
-  $: false
   JET: false
-  saveAs: fasle
+  saveAs: false
