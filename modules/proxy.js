@@ -40,13 +40,19 @@ module.exports = function (options) {
   socket.on('proxy-response', _.partial(onResponse, options));
 
   customUrlRegExp = _.get(options, 'customUrlRegExp');
-  if (!_.isString(customUrlRegExp)) customUrlRegExp = null;
+  if (!_.isRegExp(customUrlRegExp)) customUrlRegExp = null;
 
   return function (req, res, next) {
     var url = req.url;
     var id;
 
-    if (_.startsWith(url.toLowerCase(), '/apps/udf/msf')) {
+    var lurl = url.toLowerCase();
+    if (/\.js$/.test(url)) {
+      next();
+      return;
+    }
+
+    if (_.startsWith(lurl, '/apps/udf/msf')) {
       id = _.uniqueId('udf');
       responseMap[id] = res;
       socket.emit('udf-request', id, req.headers, req.body, _.get(options, 'udf') || null);
@@ -58,6 +64,7 @@ module.exports = function (options) {
       /^\/Explorer/.test(url) ||
       /contentmenubar/i.test(url) ||
       /AjaxHandler/i.test(url) ||
+      /\.ashx/i.test(url) ||
       (customUrlRegExp && customUrlRegExp.test(url))) {
       id = _.uniqueId('service');
       responseMap[id] = res;
