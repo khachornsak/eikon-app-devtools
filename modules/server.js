@@ -1,25 +1,16 @@
-/* eslint-disable
-  func-names,
-  no-use-before-define,
-  no-var,
-  object-shorthand,
-  prefer-arrow-callback,
-  prefer-template,
-  vars-on-top
-*/
-
 var _ = require('lodash');
 var http = require('http');
 var socketio = require('socket.io');
 
 module.exports = function () {
+  var events;
   var server = new http.Server();
   var io = socketio(server);
   var port = 3000;
 
   server.listen(port);
 
-  var events = [
+  events = [
     'download',
     'context-change',
     'quotes-reset',

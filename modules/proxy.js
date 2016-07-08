@@ -1,12 +1,3 @@
-/* eslint-disable
-  func-names,
-  no-console,
-  no-var,
-  object-shorthand,
-  prefer-arrow-callback,
-  prefer-template
-*/
-
 var _ = require('lodash');
 var socketClient = require('socket.io-client');
 var socket;
