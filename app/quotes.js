@@ -4,12 +4,14 @@ import moment from 'moment';
 
 let socket;
 
-const $head = $('#head');
-const $display = $('#display');
+const $table = $('#quotes-table');
+const $head = $('#quotes-head');
+const $display = $('#quotes-display');
 
 let ricFilter = '';
 const rows = [];
-let latestKey;
+let discardAllUpdates = false;
+let tableFrozen = false;
 
 JET.init({ ID: 'a' });
 
@@ -56,37 +58,41 @@ function createRow(row) {
   $tr.append('<td><a class="ric" href="#"></a></td>');
   $tr.find('.ric').attr('ric', row.ric).text(row.ric);
 
-  let html = _.map(columns, (c) => {
-    let value = data[c.fid];
-    if (value) {
-      let classNames = '';
-      const { raw, formatted } = value;
-      if (formatted === null) return '<td><i>null</i></td>';
+  let html = _.map(columns, ({ fid, color }) => {
+    let value = data[fid];
+    let classNames = `col_${fid}`;
 
-      if (c.color) {
+    if (value) {
+      const { raw, formatted } = value;
+      if (formatted === null) {
+        classNames += ' is-null';
+        return `<td class="${classNames}">null</td>`;
+      }
+
+      if (color) {
         if (raw < 0) {
-          classNames = 'change-down';
+          classNames += ' change-down';
         } else if (raw > 0) {
-          classNames = 'change-up';
+          classNames += ' change-up';
         }
       }
 
-      return `<td${classNames ? ` class="${classNames}"` : ''}>${formatted}</td>`;
+      return `<td class="${classNames}">${formatted}</td>`;
     }
 
-    return '<td></td>';
+    return `<td class="${classNames}"></td>`;
   });
 
   $tr.append(html);
   $tr.css('background-color', row.color);
 
-  const v = JSON.stringify(_.transform(data, (r, vv, f) => {
+  const v = _.transform(data, (r, vv, f) => {
     if (!_.includes(fids, f) && !_.includes(['X_RIC_NAME'], f)) {
       r[f] = vv.formatted;
     }
-  }, {})).slice(1, -1);
+  }, {});
   $td = $('<td></td>');
-  $td.html(v);
+  $td.html(JSON.stringify(v).slice(1, -1));
   $tr.append($td);
 
   return $tr;
@@ -97,16 +103,14 @@ function log(id, event, ric, data, time, color) {
 
   rows.unshift(row = { id, event, ric, data, time, color });
 
-  if (check(ric)) {
+  if (!tableFrozen && check(ric)) {
     $display.prepend(createRow(row));
   }
 }
 
 const callbacks = {
   onNewRow(subscription, ric, data, rowN) {
-    if (window.discardAllUpdates) {
-      return;
-    }
+    if (discardAllUpdates) return;
 
     socket.emit('quotes-onNewRow', subscription.id, ric, data, rowN);
     const timestamp = moment().format('HH:mm:ss.SSS');
@@ -114,12 +118,10 @@ const callbacks = {
   },
 
   onUpdate(subscription, rawUpdates, status) {
-    if (window.discardAllUpdates) {
-      return;
-    }
+    if (discardAllUpdates) return;
 
     socket.emit('quotes-onUpdate', subscription.id, rawUpdates, status);
-    let color = `rgba(${_.random(255)}, ${_.random(255)}, ${_.random(255)}, 0.1)`;
+    let color = `rgba(${_.random(255)}, ${_.random(255)}, ${_.random(255)}, 0.08)`;
     const timestamp = moment().format('HH:mm:ss.SSS');
 
     let updates;
@@ -137,9 +139,7 @@ const callbacks = {
   },
 
   onRemoveRow(subscription, ric, data, rowN) {
-    if (window.discardAllUpdates) {
-      return;
-    }
+    if (discardAllUpdates) return;
 
     socket.emit('quotes-onRemoveRow', subscription.id, ric, data, rowN);
     const timestamp = moment().format('HH:mm:ss.SSS');
@@ -159,11 +159,6 @@ function updateTable() {
 
 function setContext(context) {
   JET.contextChange(context);
-}
-
-function simulateSubscription(ric, data) {
-  socket.emit('quotes-onUpdate', latestKey, ric, data);
-  log(latestKey, 'uf', ric, data);
 }
 
 $('#filter-ric').on('change keyup', (e) => {
@@ -193,14 +188,19 @@ $(document).on('click', '.ric', (e) => {
   return false;
 });
 
-window.discardAllUpdates = false;
-window.simulateSubscription = simulateSubscription;
-
-$('#btn-pause').click((e) => {
-  window.discardAllUpdates = !$(e.target).hasClass('active');
+$('#btn-batch').click((e) => {
+  let batch = $(e.target).hasClass('active');
+  $table.toggleClass('hide-batch', batch);
 });
 
-// const fids1 = _.map(columns, 'fid').concat(['test', 'sssa', 'dfa']);
+$('#btn-freeze').click((e) => {
+  tableFrozen = !$(e.target).hasClass('active');
+  if (!tableFrozen) updateTable();
+});
+
+$('#btn-pause').click((e) => {
+  discardAllUpdates = !$(e.target).hasClass('active');
+});
 
 // JET.Quotes.create()
 // .rics(['EUR=', 'GBP=', 'JPY=', 'CHF=', 'AUD=', 'NZY=', 'CHY=', 'THB='])
@@ -223,7 +223,7 @@ const quotes = {
     });
 
     socket.on('quotes-create', (key) => {
-      const subscription = JET.Quotes.create(latestKey = key);
+      const subscription = JET.Quotes.create(key);
       subscription
         .onNewRow(callbacks.onNewRow)
         .onUpdate(callbacks.onUpdate, true)
