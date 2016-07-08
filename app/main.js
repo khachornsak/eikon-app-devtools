@@ -43,3 +43,5 @@ $('#feedback').click(() => {
   let subject = 'Feedback on Eikon App Devtools';
   window.location.href = `mailto:${to}?Subject=${subject}`;
 });
+
+window.top.document.title = 'Eikon App Devtools';
