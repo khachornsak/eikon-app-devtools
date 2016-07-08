@@ -195,8 +195,7 @@ window.discardAllUpdates = false;
 window.simulateSubscription = simulateSubscription;
 
 $('#btn-pause').click((e) => {
-  $(e.target).toggleClass('active');
-  window.discardAllUpdates = $(e.target).hasClass('active');
+  window.discardAllUpdates = !$(e.target).hasClass('active');
 });
 
 // const fids1 = _.map(columns, 'fid').concat(['test', 'sssa', 'dfa']);
