@@ -1,7 +1,14 @@
+import $ from 'jquery';
+
+import route from './route';
+import quotes from './quotes';
+import feed from './feed';
+import udf from './udf';
+import proxy from './proxy';
+
 require('babel-polyfill');
 require('./style.scss');
 
-import $ from 'jquery';
 window.$ = $;
 window.jQuery = $;
 require('../bower_components/AdminLTE/bootstrap/js/bootstrap.js');
@@ -9,12 +16,6 @@ require('../bower_components/AdminLTE/dist/js/app.js');
 require('../bower_components/file-saver/FileSaver.js');
 
 const socket = require('socket.io-client')('http://localhost:3000');
-
-import route from './route';
-import quotes from './quotes';
-import feed from './feed';
-import udf from './udf';
-import proxy from './proxy';
 
 JET.init({ ID: 'a' });
 
