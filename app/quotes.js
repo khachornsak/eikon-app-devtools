@@ -56,35 +56,33 @@ function createRow(row) {
   $tr.append('<td><a class="ric" href="#"></a></td>');
   $tr.find('.ric').attr('ric', row.ric).text(row.ric);
 
-  _.forEach(columns, (c) => {
-    if (data[c.fid]) {
+  let html = _.map(columns, (c) => {
+    let value = data[c.fid];
+    if (value) {
       let classNames = '';
-      const { raw: r, formatted: f } = data[c.fid];
-      if (f === null) {
-        $tr.append('<td>--</td>');
-      } else {
-        if (c.color) {
-          if (r < 0) {
-            classNames = 'change-down';
-          }
+      const { raw, formatted } = value;
+      if (formatted === null) return '<td><i>null</i></td>';
 
-          if (r > 0) {
-            classNames = 'change-up';
-          }
+      if (c.color) {
+        if (raw < 0) {
+          classNames = 'change-down';
+        } else if (raw > 0) {
+          classNames = 'change-up';
         }
-
-        $tr.append(`<td${classNames ? ` class="${classNames}"` : ''}>${f}</td>`);
       }
-    } else {
-      $tr.append('<td></td>');
+
+      return `<td${classNames ? ` class="${classNames}"` : ''}>${formatted}</td>`;
     }
+
+    return '<td></td>';
   });
 
+  $tr.append(html);
   $tr.css('background-color', row.color);
 
   const v = JSON.stringify(_.transform(data, (r, vv, f) => {
     if (!_.includes(fids, f) && !_.includes(['X_RIC_NAME'], f)) {
-      _.assign(r, { [f]: vv.formatted });
+      r[f] = vv.formatted;
     }
   }, {})).slice(1, -1);
   $td = $('<td></td>');
