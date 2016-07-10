@@ -19,7 +19,7 @@ module.exports = {
       { test: /\.(png|jpg)$/, loader: 'url?limit=8192' },
     ],
   },
-  devtool: 'source-map',
+  devtool: 'eval',
   devServer: {
     contentBase: './dist',
     hot: true,
