@@ -37,6 +37,22 @@ const columns = [
   { fid: 'VALUE_TS1', name: 'time' },
 ];
 
+let sheet;
+let cssEl = document.createElement('style');
+cssEl.type = 'text/css';
+document.head.appendChild(cssEl);
+sheet = cssEl.sheet;
+
+_.forEach(columns, ({ fid, active }) => {
+  if (!active) sheet.addRule(`.col_${fid}`, 'display: none;');
+});
+let removeCssRule = (fid) => {
+  let index = _.findIndex(sheet.rules, (rule) => rule.selectorText.endsWith(fid));
+  if (index >= 0) {
+    sheet.removeRule(index);
+  }
+};
+
 const fids = _.map(columns, 'fid');
 
 let subscriptions = {};
@@ -58,7 +74,7 @@ function createRow(row) {
   $tr.append('<td><a class="ric" href="#"></a></td>');
   $tr.find('.ric').attr('ric', row.ric).text(row.ric);
 
-  let html = _.map(columns, ({ fid, color }) => {
+  let html = _.map(columns, ({ fid, color, active }, i) => {
     let value = data[fid];
     let classNames = `col_${fid}`;
 
@@ -75,6 +91,11 @@ function createRow(row) {
         } else if (raw > 0) {
           classNames += ' change-up';
         }
+      }
+
+      if (!active) {
+        columns[i].active = true;
+        removeCssRule(fid);
       }
 
       return `<td class="${classNames}">${formatted}</td>`;
@@ -172,7 +193,7 @@ $('#btn-reset').click(() => {
 
 $('<tr></tr>')
   .append('<th></th><th>RIC</th>')
-  .append(_.reduce(columns, (r, c) => `${r}<th>${c.name}</th>`, ''))
+  .append(_.reduce(columns, (r, { fid, name }) => `${r}<th class="col_${fid}">${name}</th>`, ''))
   .append('<th></th>')
   .appendTo($head);
 
