@@ -202,13 +202,15 @@ $('#btn-pause').click((e) => {
   discardAllUpdates = !$(e.target).hasClass('active');
 });
 
+// const fids1 = _.map(columns, 'fid');
 // JET.Quotes.create()
-// .rics(['EUR=', 'GBP=', 'JPY=', 'CHF=', 'AUD=', 'NZY=', 'CHY=', 'THB='])
-// .rics(_.map(_.range(40), (i) => `ricadfasdfa${i}`))
-// .rawFields(fids1)
-// .formattedFields(fids1)
-// .onUpdate(callbacks.onUpdate, true)
-// .start();
+//   .rics(['EUR=', 'GBP=', 'JPY=', 'CHF=', 'AUD=', 'NZD=', 'CNY=', 'THB='])
+//   .rics(['IBM.N', 'VOD.L'])
+//   .rics(['US10YT=RR', 'GB10YT=RR'])
+//   .rawFields(fids1)
+//   .formattedFields(fids1)
+//   .onUpdate(callbacks.onUpdate, true)
+//   .start();
 
 const quotes = {
   init(_socket) {

@@ -7,13 +7,13 @@ import udf from './udf';
 import proxy from './proxy';
 
 require('babel-polyfill');
-require('./style.scss');
+require('../styles/style.scss');
 
 window.$ = $;
 window.jQuery = $;
-require('../bower_components/AdminLTE/bootstrap/js/bootstrap.js');
-require('../bower_components/AdminLTE/dist/js/app.js');
-require('../bower_components/file-saver/FileSaver.js');
+require('../../bower_components/AdminLTE/bootstrap/js/bootstrap.js');
+require('../../bower_components/AdminLTE/dist/js/app.js');
+require('../../bower_components/file-saver/FileSaver.js');
 
 const socket = require('socket.io-client')('http://localhost:3000');
 
@@ -37,7 +37,7 @@ socket.on('download', (filename, data) => {
   saveAs(new Blob([new Buffer(data, 'base64')], { type: 'application/octet-stream' }), filename);
 });
 
-$('#site').text(require('../modules/env'));
+$('#site').text(require('../../modules/env'));
 $('#feedback').click(() => {
   let to = 'pirasis.leelatanon@thomsonreuters.com';
   let subject = 'Feedback on Eikon App Devtools';

@@ -4,7 +4,7 @@ const webpack = require('webpack');
 
 module.exports = {
   context: __dirname,
-  entry: './app/main.js',
+  entry: './app/scripts/main.js',
   output: {
     path: path.join(__dirname, 'dist'),
     publicPath: '/',
