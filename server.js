@@ -12,11 +12,17 @@ app.use(require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,
 }));
 
-app.get('/', (req, res) => {
-  res.sendFile(`${__dirname}/index.html`);
-});
-app.use(express.static('app'));
-app.use('/bower_components', express.static('./bower_components'));
+const path = `${__dirname}/app`;
+const rootUrl = '/apps/eikon-app-devtools';
+const baseUrl = `${rootUrl}/0.0.0`;
+
+app.get('/', (req, res) => { res.redirect(rootUrl); });
+app.get(rootUrl, (req, res) => { res.sendFile(`${path}/iframe.html`); });
+app.get(baseUrl, (req, res) => { res.sendFile(`${path}/index.html`); });
+app.get(`${baseUrl}/bundle.js`, (req, res) => { res.redirect('/bundle.js'); });
+
+app.use(baseUrl, express.static('app'));
+app.use(`${baseUrl}/bower_components`, express.static('./bower_components'));
 
 const server = new http.Server(app);
 const io = require('socket.io')(server);
