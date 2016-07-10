@@ -33,8 +33,8 @@ const columns = [
   { fid: 'OAS_BID', name: 'oas' },
   { fid: 'NOMINAL', name: 'nomi' },
   { fid: 'MOD_DURTN', name: 'mod dur' },
-  { fid: 'VALUE_DT1', name: 'date' },
-  { fid: 'VALUE_TS1', name: 'time' },
+  { fid: 'VALUE_DT1', name: 'date', align: 'right' },
+  { fid: 'VALUE_TS1', name: 'time', align: 'right' },
 ];
 
 let sheet;
@@ -43,11 +43,13 @@ cssEl.type = 'text/css';
 document.head.appendChild(cssEl);
 sheet = cssEl.sheet;
 
-_.forEach(columns, ({ fid, active }) => {
+_.forEach(columns, ({ fid, align, active }) => {
   if (!active) sheet.addRule(`.col_${fid}`, 'display: none;');
+  if (align) sheet.addRule(`.col_${fid}`, `text-align: ${align};`);
 });
 let removeCssRule = (fid) => {
-  let index = _.findIndex(sheet.rules, (rule) => rule.selectorText.endsWith(fid));
+  let index = _.findIndex(sheet.rules, (rule) =>
+    rule.selectorText.endsWith(fid) && rule.style[0] === 'display');
   if (index >= 0) {
     sheet.removeRule(index);
   }
