@@ -44,7 +44,7 @@ document.head.appendChild(cssEl);
 sheet = cssEl.sheet;
 
 _.forEach(columns, ({ fid, align, active }) => {
-  if (!active) sheet.addRule(`.col_${fid}`, 'display: none;');
+  if (!active) sheet.addRule(`.col_${fid}`, 'display: none !important;');
   if (align) sheet.addRule(`.col_${fid}`, `text-align: ${align};`);
 });
 let removeCssRule = (fid) => {
