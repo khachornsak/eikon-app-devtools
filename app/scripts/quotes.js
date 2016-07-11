@@ -17,8 +17,10 @@ JET.init({ ID: 'a' });
 
 // fixed columns
 const columns = [
+  { fid: 'CF_LAST', name: 'last' },
   { fid: 'PRIMACT_1', name: 'bid' },
   { fid: 'SEC_ACT_1', name: 'ask' },
+  { fid: 'CF_NETCHNG', name: 'chng', color: true },
   { fid: 'NETCHNG_1', name: 'chng', color: true },
   { fid: 'PCTCHNG', name: '%chng', color: true },
   { fid: 'ACVOL_1', name: 'vol' },
@@ -33,8 +35,10 @@ const columns = [
   { fid: 'OAS_BID', name: 'oas' },
   { fid: 'NOMINAL', name: 'nomi' },
   { fid: 'MOD_DURTN', name: 'mod dur' },
-  { fid: 'VALUE_DT1', name: 'date' },
-  { fid: 'VALUE_TS1', name: 'time' },
+  { fid: 'VALUE_DT1', name: 'date', width: 80 },
+  { fid: 'TRADE_DATE', name: 'date', width: 80 },
+  { fid: 'VALUE_TS1', name: 'time', width: 50 },
+  { fid: 'TRDTIM_1', name: 'time', width: 50 },
 ];
 
 let sheet;
@@ -43,9 +47,12 @@ cssEl.type = 'text/css';
 document.head.appendChild(cssEl);
 sheet = cssEl.sheet;
 
-_.forEach(columns, ({ fid, align, active }) => {
+_.forEach(columns, ({ fid, width, align, active }) => {
   if (!active) sheet.addRule(`.col_${fid}`, 'display: none !important;');
-  if (align) sheet.addRule(`.col_${fid}`, `text-align: ${align};`);
+  let rules = [];
+  if (align) rules.push(`text-align: ${align};`);
+  if (width) rules.push(`width: ${width}px;`);
+  if (rules.length) sheet.addRule(`.col_${fid}`, rules.join(''));
 });
 let removeCssRule = (fid) => {
   let index = _.findIndex(sheet.rules, (rule) =>
@@ -194,7 +201,7 @@ $('#btn-reset').click(() => {
 });
 
 $('<tr></tr>')
-  .append('<th></th><th>RIC</th>')
+  .append('<th style="width:80px;"></th><th>RIC</th>')
   .append(_.map(columns, ({ fid, name }) => `<th class="col-data col_${fid}">${name}</th>`))
   .append('<th></th>')
   .appendTo($head);
