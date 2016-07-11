@@ -33,8 +33,8 @@ const columns = [
   { fid: 'OAS_BID', name: 'oas' },
   { fid: 'NOMINAL', name: 'nomi' },
   { fid: 'MOD_DURTN', name: 'mod dur' },
-  { fid: 'VALUE_DT1', name: 'date', align: 'right' },
-  { fid: 'VALUE_TS1', name: 'time', align: 'right' },
+  { fid: 'VALUE_DT1', name: 'date' },
+  { fid: 'VALUE_TS1', name: 'time' },
 ];
 
 let sheet;
@@ -78,7 +78,7 @@ function createRow(row) {
 
   let html = _.map(columns, ({ fid, color, active }, i) => {
     let value = data[fid];
-    let classNames = `col_${fid}`;
+    let classNames = `col-data col_${fid}`;
 
     if (value) {
       const { raw, formatted } = value;
@@ -195,7 +195,7 @@ $('#btn-reset').click(() => {
 
 $('<tr></tr>')
   .append('<th></th><th>RIC</th>')
-  .append(_.reduce(columns, (r, { fid, name }) => `${r}<th class="col_${fid}">${name}</th>`, ''))
+  .append(_.map(columns, ({ fid, name }) => `<th class="col-data col_${fid}">${name}</th>`))
   .append('<th></th>')
   .appendTo($head);
 
