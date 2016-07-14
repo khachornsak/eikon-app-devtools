@@ -1,6 +1,8 @@
-import _ from 'lodash';
 import $ from 'jquery';
 import moment from 'moment';
+
+import random from 'lodash/random';
+import transform from 'lodash/transform';
 
 let socket;
 
@@ -24,8 +26,8 @@ const columns = [
   { fid: 'NETCHNG_1', name: 'chng', color: true },
   { fid: 'PCTCHNG', name: '%chng', color: true },
   { fid: 'ACVOL_1', name: 'vol' },
-  { fid: 'VWAP', name: 'vwap' },
   { fid: 'TURNOVER', name: 'trnovr' },
+  { fid: 'VWAP', name: 'vwap' },
   { fid: 'RT_YIELD_1', name: 'b yld' },
   { fid: 'SEC_YLD_1', name: 'a yld' },
   { fid: 'YLD_NETCHG', name: 'yld ch', color: true },
@@ -47,7 +49,7 @@ cssEl.type = 'text/css';
 document.head.appendChild(cssEl);
 sheet = cssEl.sheet;
 
-_.forEach(columns, ({ fid, width, align, active }) => {
+columns.forEach(({ fid, width, align, active }) => {
   if (!active) sheet.addRule(`.col_${fid}`, 'display: none !important;');
   let rules = [];
   if (align) rules.push(`text-align: ${align};`);
@@ -55,14 +57,14 @@ _.forEach(columns, ({ fid, width, align, active }) => {
   if (rules.length) sheet.addRule(`.col_${fid}`, rules.join(''));
 });
 let removeCssRule = (fid) => {
-  let index = _.findIndex(sheet.rules, (rule) =>
+  let index = Array.from(sheet.rules).findIndex((rule) =>
     rule.selectorText.endsWith(fid) && rule.style[0] === 'display');
   if (index >= 0) {
     sheet.removeRule(index);
   }
 };
 
-const fids = _.map(columns, 'fid');
+const fids = columns.map(c => c.fid);
 
 let subscriptions = {};
 
@@ -83,7 +85,7 @@ function createRow(row) {
   $tr.append('<td><a class="ric" href="#"></a></td>');
   $tr.find('.ric').attr('ric', row.ric).text(row.ric);
 
-  let html = _.map(columns, ({ fid, color, active }, i) => {
+  let html = columns.map(({ fid, color, active }, i) => {
     let value = data[fid];
     let classNames = `col-data col_${fid}`;
 
@@ -116,8 +118,8 @@ function createRow(row) {
   $tr.append(html);
   $tr.css('background-color', row.color);
 
-  const v = _.transform(data, (r, vv, f) => {
-    if (!_.includes(fids, f) && !_.includes(['X_RIC_NAME'], f)) {
+  const v = transform(data, (r, vv, f) => {
+    if (!Array.includes(fids, f) && !Array.includes(['X_RIC_NAME'], f)) {
       r[f] = vv.formatted;
     }
   }, {});
@@ -151,7 +153,7 @@ const callbacks = {
     if (discardAllUpdates) return;
 
     socket.emit('quotes-onUpdate', subscription.id, rawUpdates, status);
-    let color = `rgba(${_.random(255)}, ${_.random(255)}, ${_.random(255)}, 0.08)`;
+    let color = `rgba(${random(255)}, ${random(255)}, ${random(255)}, 0.08)`;
     const timestamp = moment().format('HH:mm:ss.SSS');
 
     let updates;
@@ -163,7 +165,7 @@ const callbacks = {
       updates = rawUpdates;
     }
 
-    _.forEach(updates, ([ric, data]) => {
+    updates.forEach(([ric, data]) => {
       log(subscription.id, 'u', ric, data, timestamp, color);
     });
   },
@@ -180,11 +182,9 @@ const callbacks = {
 function updateTable() {
   $display.empty();
 
-  const pass = _.filter(rows, (row) => check(row.ric));
+  const pass = rows.filter(row => check(row.ric));
 
-  _.forEach(pass, (row) => {
-    $display.append(createRow(row));
-  });
+  pass.forEach(row => { $display.append(createRow(row)); });
 }
 
 function setContext(context) {
@@ -202,7 +202,7 @@ $('#btn-reset').click(() => {
 
 $('<tr></tr>')
   .append('<th style="width:80px;"></th><th>RIC</th>')
-  .append(_.map(columns, ({ fid, name }) => `<th class="col-data col_${fid}">${name}</th>`))
+  .append(columns.map(({ fid, name }) => `<th class="col-data col_${fid}">${name}</th>`))
   .append('<th></th>')
   .appendTo($head);
 
@@ -232,24 +232,22 @@ $('#btn-pause').click((e) => {
   discardAllUpdates = !$(e.target).hasClass('active');
 });
 
-// const fids1 = _.map(columns, 'fid');
-// JET.Quotes.create()
-//   .rics(['EUR=', 'GBP=', 'JPY=', 'CHF=', 'AUD=', 'NZD=', 'CNY=', 'THB='])
-//   .rics(['IBM.N', 'VOD.L'])
-//   .rics(['US10YT=RR', 'GB10YT=RR'])
-//   .rawFields(fids1)
-//   .formattedFields(fids1)
-//   .onUpdate(callbacks.onUpdate, true)
-//   .start();
+const fids1 = [...fids, 'X_RIC_NAME'];
+JET.Quotes.create()
+  .rics(['EUR=', 'GBP=', 'JPY=', 'CHF=', 'AUD=', 'NZD=', 'CNY=', 'THB='])
+  // .rics(['IBM.N', 'VOD.L'])
+  .rics(['US10YT=RR', 'GB10YT=RR'])
+  .rawFields(fids1)
+  .formattedFields(fids1)
+  .onUpdate(callbacks.onUpdate, true)
+  .start();
 
 const quotes = {
   init(_socket) {
     socket = _socket;
 
     socket.on('quotes-reset', () => {
-      _.forEach(subscriptions, (subscription) => {
-        subscription.stop();
-      });
+      subscriptions.forEach(subscription => { subscription.stop(); });
 
       subscriptions = {};
     });

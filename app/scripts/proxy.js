@@ -1,6 +1,7 @@
-import _ from 'lodash';
 import $ from 'jquery';
 import moment from 'moment';
+
+import assign from 'lodash/assign';
 
 let socket;
 
@@ -24,7 +25,7 @@ const getHeaders = (responseHeadersString) => {
 const updateRow = (id, data) => {
   let row = rows[id];
   let d = row.data;
-  _.assign(d, data);
+  assign(d, data);
   let $td = row.el.children();
   $($td.get(0)).text(d.time);
   $($td.get(1)).text(d.path);

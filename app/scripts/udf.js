@@ -1,7 +1,9 @@
-import _ from 'lodash';
 import $ from 'jquery';
 import md5 from 'md5';
 import moment from 'moment';
+
+import assign from 'lodash/assign';
+import get from 'lodash/get';
 
 const host = window.location.hostname === 'localhost' ?
   'http://emea.apps.cp.thomsonreuters.com' : '';
@@ -27,7 +29,7 @@ const getHeaders = (responseHeadersString) => {
 const updateRow = (id, data) => {
   let row = rows[id];
   let d = row.data;
-  _.assign(d, data);
+  assign(d, data);
   let $td = row.el.children();
   $($td.get(0)).text(d.time);
   $($td.get(1)).text(d.service);
@@ -50,7 +52,7 @@ const usf = {
     socket = _socket;
 
     socket.on('udf-request', (id, headers, body, options) => {
-      let useCache = _.get(options, 'cache');
+      let useCache = get(options, 'cache');
       let cacheKey;
       let service = body.entity || body.Entity || {};
       service = service.e || service.E || 'batch';
