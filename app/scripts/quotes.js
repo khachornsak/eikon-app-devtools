@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import moment from 'moment';
 
+import forEach from 'lodash/forEach';
 import random from 'lodash/random';
 import transform from 'lodash/transform';
 
@@ -232,22 +233,22 @@ $('#btn-pause').click((e) => {
   discardAllUpdates = !$(e.target).hasClass('active');
 });
 
-const fids1 = [...fids, 'X_RIC_NAME'];
-JET.Quotes.create()
-  .rics(['EUR=', 'GBP=', 'JPY=', 'CHF=', 'AUD=', 'NZD=', 'CNY=', 'THB='])
-  // .rics(['IBM.N', 'VOD.L'])
-  .rics(['US10YT=RR', 'GB10YT=RR'])
-  .rawFields(fids1)
-  .formattedFields(fids1)
-  .onUpdate(callbacks.onUpdate, true)
-  .start();
+// const fids1 = [...fids, 'X_RIC_NAME'];
+// JET.Quotes.create()
+//   .rics(['EUR=', 'GBP=', 'JPY=', 'CHF=', 'AUD=', 'NZD=', 'CNY=', 'THB='])
+//   .rics(['IBM.N', 'VOD.L'])
+//   .rics(['US10YT=RR', 'GB10YT=RR'])
+//   .rawFields(fids1)
+//   .formattedFields(fids1)
+//   .onUpdate(callbacks.onUpdate, true)
+//   .start();
 
 const quotes = {
   init(_socket) {
     socket = _socket;
 
     socket.on('quotes-reset', () => {
-      subscriptions.forEach(subscription => { subscription.stop(); });
+      forEach(subscriptions, subscription => { subscription.stop(); });
 
       subscriptions = {};
     });
