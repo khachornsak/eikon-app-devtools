@@ -7,3 +7,4 @@ rules:
 globals:
   JET: false
   saveAs: false
+  window: false

@@ -2,6 +2,7 @@ import $ from 'jquery';
 import moment from 'moment';
 
 import assign from 'lodash/assign';
+import forEach from 'lodash/forEach';
 
 let socket;
 
@@ -22,19 +23,31 @@ const getHeaders = (responseHeadersString) => {
   return responseHeaders;
 };
 
+const columns = [
+  { field: 'timestamp' },
+  { field: 'method', className: 'text-uppercase' },
+  { field: 'path', className: 'word-break' },
+  { field: 'timeSpent' },
+  { field: 'contentLength' },
+];
+
 const updateRow = (id, data) => {
   let row = rows[id];
   let d = row.data;
   assign(d, data);
-  let $td = row.el.children();
-  $($td.get(0)).text(d.time);
-  $($td.get(1)).text(d.path);
-  if (d.start && d.stop) $($td.get(2)).text(`${d.stop - d.start}ms`);
-  if (d.size) $($td.get(3)).text(`${d.size}bytes`);
+
+  if (d.start && d.stop) d.timeSpent = `${d.stop - d.start}ms`;
+  if (d.size) d.contentLength = `${d.size}bytes`;
+
+  forEach(row.el.children(), (el, i) => {
+    let col = columns[i] || {};
+    $(el).text(d[col.field] || '');
+  });
 };
 
 const addRow = (id) => {
-  let $row = $('<tr><td></td><td></td><td></td><td></td></tr>');
+  let tds = columns.map(({ className }) => `<td class="${className}"></td>`);
+  let $row = $(`<tr>${tds.join('')}</tr>`);
   $display.prepend($row);
   rows[id] = { el: $row, data: {} };
   updateRow(id);
@@ -56,8 +69,9 @@ const proxy = {
   call(id, path, method, headers, contentType, data) {
     addRow(id);
     updateRow(id, {
-      time: moment().format('HH:mm:ss.SSS'),
+      timestamp: moment().format('HH:mm:ss.SSS'),
       start: new Date().getTime(),
+      method,
       path,
     });
 

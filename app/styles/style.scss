@@ -62,12 +62,17 @@
 
 table {
   font-size: small;
-}
 
-table td {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  td {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    &.word-break {
+      white-space: normal;
+      word-break: break-all;
+    }
+  }
 }
 
 .change-up {
