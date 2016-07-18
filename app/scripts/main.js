@@ -25,13 +25,14 @@ feed.init(socket);
 udf.init(socket);
 proxy.init(socket);
 
-socket.on('context-change', (context) => {
-  JET.contextChange(context);
-});
+const statusEl = $('#status');
+const setStatus = (text, textClass) =>
+  statusEl.html(`<span class="fa fa-circle text-${textClass}"></span> ${text}`);
 
-socket.on('navigate', (obj) => {
-  JET.navigate(obj);
-});
+socket.on('connect', () => { setStatus('Connected', 'success'); });
+socket.on('disconnect', () => { setStatus('Disconnected', 'danger'); });
+socket.on('context-change', (context) => { JET.contextChange(context); });
+socket.on('navigate', (obj) => { JET.navigate(obj); });
 
 socket.on('download', (filename, data) => {
   saveAs(new Blob([new Buffer(data, 'base64')], { type: 'application/octet-stream' }), filename);
