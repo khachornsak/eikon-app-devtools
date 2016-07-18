@@ -24,12 +24,17 @@ const getHeaders = (responseHeadersString) => {
 };
 
 const columns = [
-  { field: 'timestamp' },
-  { field: 'method', className: 'text-uppercase' },
-  { field: 'path', className: 'word-break' },
-  { field: 'timeSpent' },
-  { field: 'contentLength' },
+  { name: '', field: 'timestamp' },
+  { name: '', field: 'method', className: 'text-uppercase' },
+  { name: 'Path', field: 'path', className: 'word-break' },
+  { name: 'Content Type', field: 'contentType' },
+  { name: 'Time', field: 'timeSpent' },
+  { name: 'Size', field: 'contentLength' },
 ];
+
+$('<tr></tr>')
+  .append(columns.map(({ name }) => `<th>${name}</th>`))
+  .appendTo($('#proxy-head'));
 
 const updateRow = (id, data) => {
   let row = rows[id];
@@ -91,6 +96,7 @@ const proxy = {
       let resHeaders = getHeaders(xhr.getAllResponseHeaders());
       updateRow(id, {
         stop: new Date().getTime(),
+        contentType: (resHeaders['content-type'] || '').split(';')[0],
         size: resHeaders['content-length'],
       });
       socket.emit('proxy-response', id, resHeaders, response);
