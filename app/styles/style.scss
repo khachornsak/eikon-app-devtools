@@ -91,13 +91,6 @@ table {
   color: #dd4b39;
 }
 
-#udf-table {
-  th:nth-child(n+5),
-  td:nth-child(n+5) {
-    text-align: right;
-  }
-}
-
 #quotes-table {
   .is-null {
     font-style: italic;

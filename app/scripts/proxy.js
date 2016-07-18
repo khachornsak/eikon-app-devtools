@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import moment from 'moment';
 
-import forEach from 'lodash/forEach';
+import { addHeader, createRow } from './utils/dom';
 
 let socket;
 
@@ -24,34 +24,30 @@ const getHeaders = (responseHeadersString) => {
 
 const columns = [
   { name: '', field: 'timestamp' },
-  { name: '', field: 'method', className: 'text-uppercase' },
-  { name: 'Path', field: 'path', className: 'word-break' },
+  { name: '', field: 'method', classNames: 'text-uppercase' },
+  { name: 'Path', field: 'path', classNames: 'word-break' },
   { name: 'Content Type', field: 'contentType' },
-  { name: 'Time', field: 'timeSpent' },
-  { name: 'Size', field: 'contentLength' },
+  { name: 'Time', headerTooltip: 'in milliseconds', field: 'timeSpent', classNames: 'text-right' },
+  { name: 'Size', headerTooltip: 'in bytes', field: 'size', classNames: 'text-right' },
 ];
 
-$('<tr></tr>')
-  .append(columns.map(({ name }) => `<th>${name}</th>`))
-  .appendTo($('#proxy-head'));
+addHeader('proxy-head', columns);
 
 const updateRow = (id, data) => {
   let row = rows[id];
   let d = row.data;
   Object.assign(d, data);
 
-  if (d.start && d.stop) d.timeSpent = `${d.stop - d.start}ms`;
-  if (d.size) d.contentLength = `${d.size}bytes`;
+  if (d.start && d.stop) d.timeSpent = d.stop - d.start;
 
-  forEach(row.el.children(), (el, i) => {
+  row.el.children().toArray().forEach((el, i) => {
     let col = columns[i] || {};
     $(el).text(d[col.field] || '');
   });
 };
 
 const addRow = (id) => {
-  let tds = columns.map(({ className }) => `<td class="${className}"></td>`);
-  let $row = $(`<tr>${tds.join('')}</tr>`);
+  let $row = $(createRow(columns));
   $display.prepend($row);
   rows[id] = { el: $row, data: {} };
   updateRow(id);

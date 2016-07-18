@@ -4,6 +4,8 @@ import moment from 'moment';
 
 import get from 'lodash/get';
 
+import { addHeader, createRow } from './utils/dom';
+
 const host = window.location.hostname === 'localhost' ?
   'http://emea.apps.cp.thomsonreuters.com' : '';
 const url = `${host}/apps/udf/msf`;
@@ -25,22 +27,34 @@ const getHeaders = (responseHeadersString) => {
   return responseHeaders;
 };
 
+const columns = [
+  { name: '', field: 'timestamp' },
+  { name: 'Service', field: 'serviceName' },
+  { name: 'Transaction ID', field: 'transactionId' },
+  { name: 'Backend', field: 'backend' },
+  { name: 'Time', headerTooltip: 'in milliseconds', field: 'timeSpent', classNames: 'text-right' },
+  { name: 'Size', headerTooltip: 'in bytes', field: 'size', classNames: 'text-right' },
+];
+
+addHeader('udf-head', columns);
+
 const updateRow = (id, data) => {
   let row = rows[id];
   let d = row.data;
   Object.assign(d, data);
   let $td = row.el.children();
-  $($td.get(0)).text(d.time);
-  $($td.get(1)).text(d.service);
-  $($td.get(2)).text(d.transactionId || '');
-  $($td.get(3)).text(d.backend || '');
-  if (d.start && d.stop) $($td.get(4)).text(`${d.stop - d.start}ms`);
-  if (d.size) $($td.get(5)).text(`${d.size}bytes`);
-  if (d.cache) $($td.get(4)).html('<i>send cache</i>');
+
+  if (d.start && d.stop) d.timeSpent = d.stop - d.start;
+
+  columns.forEach((col, i) => {
+    $($td.get(i)).text(d[col.field] || '');
+  });
+
+  if (d.cache) $($td.get(2)).html('<i>send cache</i>');
 };
 
 const addRow = (id) => {
-  let $row = $('<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>');
+  let $row = $(createRow(columns));
   $display.prepend($row);
   rows[id] = { el: $row, data: {} };
   updateRow(id);
@@ -53,17 +67,17 @@ const udf = {
     socket.on('udf-request', (id, headers, body, options) => {
       let useCache = get(options, 'cache');
       let cacheKey;
-      let service = body.entity || body.Entity || {};
-      service = service.e || service.E || 'batch';
+      let serviceName = body.entity || body.Entity || {};
+      serviceName = serviceName.e || serviceName.E || 'batch';
 
       addRow(id);
       updateRow(id, {
-        time: moment().format('HH:mm:ss.SSS'),
-        service,
+        timestamp: moment().format('HH:mm:ss.SSS'),
+        serviceName,
         start: new Date().getTime(),
       });
 
-      if (useCache && /dapsfile/i.test(service)) {
+      if (useCache && /dapsfile/i.test(serviceName)) {
         useCache = false;
       }
 

@@ -1,7 +1,8 @@
 import $ from 'jquery';
 import moment from 'moment';
 
-let $head;
+import { addHeader, createRow } from './utils/dom';
+
 let $display;
 
 const eventClasses = {
@@ -18,10 +19,9 @@ const columns = [
 
 const feed = {
   init(socket) {
-    $head = $('#feed-head');
     $display = $('#feed-display');
 
-    feed.createHeader();
+    addHeader('feed-head', columns);
 
     socket.on('publish', (channel, data) => {
       feed.addRow('publish', channel, data);
@@ -36,12 +36,6 @@ const feed = {
     });
   },
 
-  createHeader() {
-    $('<tr>')
-      .append(columns.map(({ name }) => `<th>${name}</th>`))
-      .appendTo($head);
-  },
-
   addRow(eventName, channel, data = '') {
     let params = {
       timestamp: moment().format('HH:mm:ss.SSS'),
@@ -50,9 +44,7 @@ const feed = {
       data,
     };
 
-    let $tr = $('<tr>')
-      .append(columns.map(({ field, classNames }) =>
-        `<td class="${classNames}">${params[field] || ''}</td>`))
+    let $tr = $(createRow(columns, params))
       .addClass(eventClasses[eventName] || '');
     $display.prepend($tr);
   },
