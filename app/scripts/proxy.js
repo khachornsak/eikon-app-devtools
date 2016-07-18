@@ -1,7 +1,6 @@
 import $ from 'jquery';
 import moment from 'moment';
 
-import assign from 'lodash/assign';
 import forEach from 'lodash/forEach';
 
 let socket;
@@ -39,7 +38,7 @@ $('<tr></tr>')
 const updateRow = (id, data) => {
   let row = rows[id];
   let d = row.data;
-  assign(d, data);
+  Object.assign(d, data);
 
   if (d.start && d.stop) d.timeSpent = `${d.stop - d.start}ms`;
   if (d.size) d.contentLength = `${d.size}bytes`;

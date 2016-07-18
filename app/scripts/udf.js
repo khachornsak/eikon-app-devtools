@@ -2,7 +2,6 @@ import $ from 'jquery';
 import md5 from 'md5';
 import moment from 'moment';
 
-import assign from 'lodash/assign';
 import get from 'lodash/get';
 
 const host = window.location.hostname === 'localhost' ?
@@ -29,7 +28,7 @@ const getHeaders = (responseHeadersString) => {
 const updateRow = (id, data) => {
   let row = rows[id];
   let d = row.data;
-  assign(d, data);
+  Object.assign(d, data);
   let $td = row.el.children();
   $($td.get(0)).text(d.time);
   $($td.get(1)).text(d.service);
