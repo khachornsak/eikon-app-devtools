@@ -19,7 +19,7 @@ var onResponse = function (options, id, headers, response) {
   if (res.send) {
     res.send(response);
   } else {
-    res.end(JSON.stringify(response));
+    res.end(_.isString(response) ? response : JSON.stringify(response));
   }
 };
 
