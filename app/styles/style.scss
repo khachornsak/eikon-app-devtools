@@ -73,6 +73,14 @@ table {
       word-break: break-all;
     }
   }
+
+  tr.info > td {
+    background-color: fade-out(#D9EDF7, 0.5) !important;
+  }
+
+  tr.success > td {
+    background-color: fade-out(#DFF0D8, 0.5) !important;
+  }
 }
 
 .change-up {

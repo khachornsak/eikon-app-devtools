@@ -4,6 +4,18 @@ import moment from 'moment';
 let $head;
 let $display;
 
+const eventClasses = {
+  publish: 'info',
+  subscribe: 'success',
+};
+
+const columns = [
+  { name: '', field: 'timestamp' },
+  { name: 'Event', field: 'eventName' },
+  { name: 'Channel', field: 'channel' },
+  { name: 'Data', field: 'data', classNames: 'word-break' },
+];
+
 const feed = {
   init(socket) {
     $head = $('#feed-head');
@@ -25,20 +37,23 @@ const feed = {
   },
 
   createHeader() {
-    let $tr = $('<tr>');
-    $tr.append('<th>time</th>');
-    $tr.append('<th>event</th>');
-    $tr.append('<th>channel</th>');
-    $tr.append('<th>data</th>');
-    $head.append($tr);
+    $('<tr>')
+      .append(columns.map(({ name }) => `<th>${name}</th>`))
+      .appendTo($head);
   },
 
-  addRow(event, channel, data = '') {
-    let $tr = $('<tr>');
-    $tr.append(`<td>${moment().format('HH:mm:ss.SSS')}</td>`);
-    $tr.append(`<td>${event}</td>`);
-    $tr.append(`<td>${channel}</td>`);
-    $tr.append(`<td>${data}</td>`);
+  addRow(eventName, channel, data = '') {
+    let params = {
+      timestamp: moment().format('HH:mm:ss.SSS'),
+      eventName,
+      channel,
+      data,
+    };
+
+    let $tr = $('<tr>')
+      .append(columns.map(({ field, classNames }) =>
+        `<td class="${classNames}">${params[field] || ''}</td>`))
+      .addClass(eventClasses[eventName] || '');
     $display.prepend($tr);
   },
 };
