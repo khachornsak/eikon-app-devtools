@@ -25,7 +25,7 @@ feed.init(socket);
 udf.init(socket);
 proxy.init(socket);
 
-const statusEl = $('#status');
+const statusEl = $('#app-status');
 const setStatus = (text, textClass) =>
   statusEl.html(`<span class="fa fa-circle text-${textClass}"></span> ${text}`);
 
@@ -38,8 +38,8 @@ socket.on('download', (filename, data) => {
   saveAs(new Blob([new Buffer(data, 'base64')], { type: 'application/octet-stream' }), filename);
 });
 
-$('#site').text(require('../../modules/env'));
-$('#feedback').click(() => {
+$('#app-site').text(require('../../modules/env'));
+$('#app-feedback').click(() => {
   let to = 'pirasis.leelatanon@thomsonreuters.com';
   let subject = 'Feedback on Eikon App Devtools';
   window.location.href = `mailto:${to}?Subject=${subject}`;
