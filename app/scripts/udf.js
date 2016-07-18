@@ -47,7 +47,7 @@ const addRow = (id) => {
   updateRow(id);
 };
 
-const usf = {
+const udf = {
   init(_socket) {
     socket = _socket;
 
@@ -110,4 +110,4 @@ const usf = {
   },
 };
 
-export default usf;
+export default udf;

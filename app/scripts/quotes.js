@@ -29,6 +29,7 @@ const columns = [
   { fid: 'ACVOL_1', name: 'vol' },
   { fid: 'TURNOVER', name: 'trnovr' },
   { fid: 'VWAP', name: 'vwap' },
+  { fid: 'CF_YIELD', name: 'yld' },
   { fid: 'RT_YIELD_1', name: 'b yld' },
   { fid: 'SEC_YLD_1', name: 'a yld' },
   { fid: 'YLD_NETCHG', name: 'yld ch', color: true },
@@ -45,9 +46,9 @@ const columns = [
 ];
 
 let sheet;
-let cssEl = document.createElement('style');
+let cssEl = window.document.createElement('style');
 cssEl.type = 'text/css';
-document.head.appendChild(cssEl);
+window.document.head.appendChild(cssEl);
 sheet = cssEl.sheet;
 
 columns.forEach(({ fid, width, align, active }) => {
@@ -214,7 +215,7 @@ setInterval(() => {
   }
 }, 5 * 1000);
 
-$(document).on('click', '.ric', (e) => {
+$(window.document).on('click', '.ric', (e) => {
   setContext([{ RIC: $(e.target).attr('ric') }]);
   return false;
 });
