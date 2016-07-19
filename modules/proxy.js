@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var chalk = require('chalk');
 var socketClient = require('socket.io-client');
 var socket;
 
@@ -34,8 +35,16 @@ module.exports = function (options) {
   if (!_.isRegExp(customUrlRegExp)) customUrlRegExp = null;
 
   return function (req, res, next) {
+    var body = req.body;
+    var headers = req.headers;
+    var method = req.method;
+    var query = req.query;
     var url = req.url;
+
     var id;
+    var errorMessage;
+    var regExps;
+    var testRegExp;
 
     var lurl = url.toLowerCase();
     if (/\.js$/.test(url)) {
@@ -44,25 +53,44 @@ module.exports = function (options) {
     }
 
     if (_.startsWith(lurl, '/apps/udf/msf')) {
+      if (!body || _.isEmpty(body)) {
+        errorMessage = 'EAD: Body of MSF request is empty. Forget to config "body-parser"?';
+        console.warn(chalk.red(errorMessage));
+        next();
+        return;
+      }
+
       id = _.uniqueId('udf');
       responseMap[id] = res;
-      socket.emit('udf-request', id, req.headers, req.body, _.get(options, 'udf') || null);
+      socket.emit('udf-request', {
+        id: id,
+        url: url,
+        headers: headers,
+        body: body,
+        options: _.get(options, 'udf') || null,
+      });
       return;
     }
 
-    if (/service/i.test(url) ||
-      /^\/ta/i.test(url) ||
-      /^\/Explorer/.test(url) ||
-      /contentmenubar/i.test(url) ||
-      /AjaxHandler/i.test(url) ||
-      /\.ashx/i.test(url) ||
-      (customUrlRegExp && customUrlRegExp.test(url))) {
+    regExps = [
+      /service/i,
+      /^\/ta/i,
+      /^\/Explorer/,
+      /contentmenubar/i,
+      /AjaxHandler/i,
+      /\.ashx/i,
+    ];
+    testRegExp = function (reg) {
+      return reg.test(url);
+    };
+
+    if (_.some(regExps, testRegExp) || (customUrlRegExp && customUrlRegExp.test(url))) {
       id = _.uniqueId('service');
       responseMap[id] = res;
-      if (req.method === 'POST') {
-        socket.emit('proxy-request-post', id, url, req.headers, req.body);
+      if (method === 'POST') {
+        socket.emit('proxy-request-post', { id: id, url: url, headers: headers, data: body });
       } else {
-        socket.emit('proxy-request-get', id, url, req.headers, req.query);
+        socket.emit('proxy-request-get', { id: id, url: url, headers: headers, data: query });
       }
       return;
     }

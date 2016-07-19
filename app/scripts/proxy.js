@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import moment from 'moment';
 
+import isObject from 'lodash/isObject';
+
 import { addHeader, createRow } from './utils/dom';
 
 let socket;
@@ -25,7 +27,7 @@ const getHeaders = (responseHeadersString) => {
 const columns = [
   { name: '', field: 'timestamp' },
   { name: '', field: 'method', classNames: 'text-uppercase' },
-  { name: 'Path', field: 'path', classNames: 'word-break' },
+  { name: 'URL', field: 'url', classNames: 'word-break' },
   { name: 'Content Type', field: 'contentType' },
   { name: 'Time', headerTooltip: 'in milliseconds', field: 'timeSpent', classNames: 'text-right' },
   { name: 'Size', headerTooltip: 'in bytes', field: 'size', classNames: 'text-right' },
@@ -57,31 +59,49 @@ const proxy = {
   init(_socket) {
     socket = _socket;
 
-    socket.on('proxy-request-get', (id, path, headers, data) => {
-      proxy.call(id, path, 'get', headers, null, data);
+    socket.on('proxy-request-get', (args, url, headers, data) => {
+      let id = args;
+
+      // params from v0.1.0
+      if (isObject(args)) {
+        id = args.id;
+        url = args.url;
+        headers = args.headers;
+        data = args.data;
+      }
+      proxy.call(id, url, 'get', headers, null, data);
     });
 
-    socket.on('proxy-request-post', (id, path, headers, data) => {
-      proxy.call(id, path, 'post', headers, 'application/json', JSON.stringify(data));
+    socket.on('proxy-request-post', (args, url, headers, data) => {
+      let id = args;
+
+      // params from v0.1.0
+      if (isObject(args)) {
+        id = args.id;
+        url = args.url;
+        headers = args.headers;
+        data = args.data;
+      }
+      proxy.call(id, url, 'post', headers, 'application/json', JSON.stringify(data));
     });
   },
 
-  call(id, path, method, headers, contentType, data) {
+  call(id, url, method, headers, contentType, data) {
     addRow(id);
     updateRow(id, {
       timestamp: moment().format('HH:mm:ss.SSS'),
       start: new Date().getTime(),
       method,
-      path,
+      url,
     });
 
     let dataType = null;
 
-    if (/contentmenubar/.test(path)) dataType = 'text';
+    if (/contentmenubar/.test(url)) dataType = 'text';
     if (method === 'get') data = null;
 
     $.ajax({
-      url: `${host}${path}`,
+      url: `${host}${url}`,
       method,
       contentType,
       dataType,

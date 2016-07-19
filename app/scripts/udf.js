@@ -2,6 +2,7 @@ import $ from 'jquery';
 import md5 from 'md5';
 import moment from 'moment';
 
+import isObject from 'lodash/isObject';
 import get from 'lodash/get';
 
 import { addHeader, createRow } from './utils/dom';
@@ -64,10 +65,22 @@ const udf = {
   init(_socket) {
     socket = _socket;
 
-    socket.on('udf-request', (id, headers, body, options) => {
+    socket.on('udf-request', (args, headers, data, options) => {
+      let id = args;
+      // let reqUrl;
+
+      // params from v0.1.0
+      if (isObject(args)) {
+        id = args.id;
+        // reqUrl = args.url;
+        headers = args.headers;
+        data = args.data;
+      }
+
+
       let useCache = get(options, 'cache');
       let cacheKey;
-      let serviceName = body.entity || body.Entity || {};
+      let serviceName = data.entity || data.Entity || {};
       serviceName = serviceName.e || serviceName.E || 'batch';
 
       addRow(id);
@@ -82,12 +95,12 @@ const udf = {
       }
 
       if (useCache) {
-        cacheKey = md5(JSON.stringify(body));
+        cacheKey = md5(JSON.stringify(data));
         if (cache[cacheKey]) {
-          let { headers: resHeaders, data } = cache[cacheKey];
+          let { headers: resHeaders, data: cacheData } = cache[cacheKey];
           updateRow(id, { cache: true });
           setTimeout(() => {
-            socket.emit('udf-response', id, resHeaders, data);
+            socket.emit('udf-response', id, resHeaders, cacheData);
           }, 300);
           return;
         }
@@ -98,12 +111,12 @@ const udf = {
         method: 'post',
         contentType: 'application/json',
         dataType: 'json',
-        data: JSON.stringify(body),
+        data: JSON.stringify(data),
         headers: {
           'X-Tr-Applicationid': 'test',
         },
       })
-      .then((data, status, xhr) => {
+      .then((responseData, status, xhr) => {
         let resHeaders = getHeaders(xhr.getAllResponseHeaders());
         updateRow(id, {
           stop: new Date().getTime(),
@@ -114,10 +127,10 @@ const udf = {
         if (useCache) {
           cache[cacheKey] = {
             headers: resHeaders,
-            data,
+            data: responseData,
           };
         }
-        socket.emit('udf-response', id, resHeaders, data);
+        socket.emit('udf-response', id, resHeaders, responseData);
       });
     });
   },

@@ -1,9 +1,10 @@
 extends: "airbnb-base"
 rules:
   no-cond-assign: 0
+  no-console: [warn, { allow: [warn, error] }]
   no-param-reassign: 0
   prefer-const: 0
-  import/no-extraneous-dependencies: [2, { devDependencies: true }]
+  import/no-extraneous-dependencies: [error, { devDependencies: true }]
 globals:
   Blob: false
   JET: false

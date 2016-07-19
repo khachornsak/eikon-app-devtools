@@ -40,8 +40,8 @@ module.exports = function () {
 
   io.on('connection', function (socket) {
     _.forEach(events, function (e) {
-      socket.on(e, function (p1, p2, p3, p4) {
-        socket.broadcast.emit(e, p1, p2, p3, p4);
+      socket.on(e, function (p1, p2, p3, p4, p5) {
+        socket.broadcast.emit(e, p1, p2, p3, p4, p5);
       });
     });
   });
