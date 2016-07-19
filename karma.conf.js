@@ -1,3 +1,9 @@
+/* eslint-disable
+  strict,
+*/
+
+'use strict';
+
 let path = require('path');
 
 let babelConfig = { presets: ['es2015'] };
