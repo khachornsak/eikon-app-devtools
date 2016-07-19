@@ -66,7 +66,7 @@ module.exports = function (options) {
         id: id,
         url: url,
         headers: headers,
-        body: body,
+        data: body,
         options: _.get(options, 'udf') || null,
       });
       return;
