@@ -5,3 +5,4 @@ dist
 records.json
 
 tests/reports
+coverage
