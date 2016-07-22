@@ -26,19 +26,12 @@ module.exports = function karmaConfig(config) {
 
     webpack: {
       babel: babelConfig,
-      isparta: {
-        embedSource: true,
-        noAutoWrap: true,
-        babel: babelConfig,
-      },
+      isparta: { embedSource: true, noAutoWrap: true, babel: babelConfig },
       module: {
         preLoaders: [
           {
             test: /\.js$/,
-            exclude: [
-              path.resolve('app/scripts/'),
-              path.resolve('node_modules/'),
-            ],
+            exclude: [path.resolve('node_modules/'), path.resolve('modules/')],
             loader: 'babel',
           },
           {
