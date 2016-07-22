@@ -16,12 +16,12 @@ module.exports = function karmaConfig(config) {
 
     files: [
       'tests/test-init.js',
-      'tests/specs/*.js',
+      'tests/specs/**/*.js',
     ],
 
     preprocessors: {
       'tests/test-init.js': 'webpack',
-      'tests/specs/*.js': 'webpack',
+      'tests/specs/**/*.js': 'webpack',
     },
 
     webpack: {
@@ -36,7 +36,7 @@ module.exports = function karmaConfig(config) {
           },
           {
             test: /\.js$/,
-            include: path.resolve('app/scripts/'),
+            include: [path.resolve('app/scripts/'), path.resolve('modules/')],
             loader: 'isparta',
           },
         ],

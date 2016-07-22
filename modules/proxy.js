@@ -1,20 +1,25 @@
 var _ = require('lodash');
 var chalk = require('chalk');
 var socketClient = require('socket.io-client');
-var socket;
 
 var responseMap = {};
-var onResponse = function (options, id, headers, response) {
+
+function setHTTPResponseHeaders(response, headers) {
+  _.chain(headers)
+    .omitBy(function (v, k) { return /^access|^content/i.test(k); })
+    .forEach(function (v, k) {
+      response.setHeader(k, v);
+    })
+    .commit();
+}
+
+function onResponse(options, id, headers, response) {
   var res = responseMap[id];
   if (!res) return;
   delete responseMap[id];
 
   if (_.get(options, 'headers') !== false) {
-    _(headers)
-      .omitBy(function (v, k) { return /^access|^content/i.test(k); })
-      .forEach(function (v, k) {
-        res.setHeader(k, v);
-      });
+    setHTTPResponseHeaders(res, headers);
   }
 
   if (res.send) {
@@ -22,10 +27,11 @@ var onResponse = function (options, id, headers, response) {
   } else {
     res.end(_.isString(response) ? response : JSON.stringify(response));
   }
-};
+}
 
 module.exports = function (options) {
   var customUrlRegExp;
+  var socket;
 
   socket = socketClient.connect(options.socketUrl || 'http://localhost:3000');
   socket.on('udf-response', _.partial(onResponse, options));
@@ -98,3 +104,5 @@ module.exports = function (options) {
     next();
   };
 };
+
+module.exports.setHTTPResponseHeaders = setHTTPResponseHeaders;
