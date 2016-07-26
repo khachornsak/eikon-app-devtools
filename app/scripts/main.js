@@ -1,5 +1,6 @@
 import $ from 'jquery';
 
+import env from '../../modules/env';
 import route from './route';
 import quotes from './quotes';
 import feed from './feed';
@@ -38,7 +39,7 @@ socket.on('download', (filename, data) => {
   saveAs(new Blob([new Buffer(data, 'base64')], { type: 'application/octet-stream' }), filename);
 });
 
-$('#app-site').text(require('../../modules/env'));
+$('#app-site').text(env);
 $('#app-feedback').click(() => {
   let to = 'pirasis.leelatanon@thomsonreuters.com';
   let subject = 'Feedback on Eikon App Devtools';
