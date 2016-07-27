@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "build": "webpack -p --config webpack.production.config.js",
+    "profile": "webpack --profile --json > stats.json",
     "lint": "eslint .",
     "test": "karma start --single-run",
     "karma": "karma start"
