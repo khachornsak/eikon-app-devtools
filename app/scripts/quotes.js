@@ -1,9 +1,6 @@
+import _ from 'lodash';
 import $ from 'jquery';
 import moment from 'moment';
-
-import forEach from 'lodash/forEach';
-import random from 'lodash/random';
-import transform from 'lodash/transform';
 
 let socket;
 
@@ -120,7 +117,7 @@ function createRow(row) {
   $tr.append(html);
   $tr.css('background-color', row.color);
 
-  const v = transform(data, (r, vv, f) => {
+  const v = _.transform(data, (r, vv, f) => {
     if (!Array.includes(fids, f) && !Array.includes(['X_RIC_NAME'], f)) {
       r[f] = vv.formatted;
     }
@@ -155,7 +152,7 @@ const callbacks = {
     if (discardAllUpdates) return;
 
     socket.emit('quotes-onUpdate', subscription.id, rawUpdates, status);
-    let color = `rgba(${random(255)}, ${random(255)}, ${random(255)}, 0.08)`;
+    let color = `rgba(${_.random(255)}, ${_.random(255)}, ${_.random(255)}, 0.08)`;
     const timestamp = moment().format('HH:mm:ss.SSS');
 
     let updates;
@@ -249,7 +246,7 @@ const quotes = {
     socket = _socket;
 
     socket.on('quotes-reset', () => {
-      forEach(subscriptions, subscription => { subscription.stop(); });
+      _.forEach(subscriptions, subscription => { subscription.stop(); });
 
       subscriptions = {};
     });

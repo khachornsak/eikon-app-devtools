@@ -1,9 +1,7 @@
+import _ from 'lodash';
 import $ from 'jquery';
 import md5 from 'md5';
 import moment from 'moment';
-
-import isObject from 'lodash/isObject';
-import get from 'lodash/get';
 
 import { addHeader, createRow } from './utils/dom';
 
@@ -70,7 +68,7 @@ const udf = {
       // let reqUrl;
 
       // params from v0.1.0
-      if (isObject(args)) {
+      if (_.isObject(args)) {
         id = args.id;
         // reqUrl = args.url;
         headers = args.headers;
@@ -79,7 +77,7 @@ const udf = {
       }
 
 
-      let useCache = get(options, 'cache');
+      let useCache = _.get(options, 'cache');
       let cacheKey;
       let serviceName = data.entity || data.Entity || {};
       serviceName = serviceName.e || serviceName.E || 'batch';

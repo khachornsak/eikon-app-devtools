@@ -1,7 +1,6 @@
+import _ from 'lodash';
 import $ from 'jquery';
 import moment from 'moment';
-
-import isObject from 'lodash/isObject';
 
 import { addHeader, createRow } from './utils/dom';
 
@@ -63,7 +62,7 @@ const proxy = {
       let id = args;
 
       // params from v0.1.0
-      if (isObject(args)) {
+      if (_.isObject(args)) {
         id = args.id;
         url = args.url;
         headers = args.headers;
@@ -76,7 +75,7 @@ const proxy = {
       let id = args;
 
       // params from v0.1.0
-      if (isObject(args)) {
+      if (_.isObject(args)) {
         id = args.id;
         url = args.url;
         headers = args.headers;
