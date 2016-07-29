@@ -36,7 +36,7 @@ module.exports = function karmaConfig(config) {
           },
           {
             test: /\.js$/,
-            include: [path.resolve('app/scripts/'), path.resolve('modules/')],
+            include: [path.resolve('app/js/'), path.resolve('modules/')],
             loader: 'isparta',
           },
         ],

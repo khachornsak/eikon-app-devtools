@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { expect } from 'chai';
 
-import { addHeader, createRow } from '../../../app/scripts/utils/dom';
+import { addHeader, createRow } from '../../../app/js/utils/dom';
 
 describe('App', () => {
   describe('Utils: dom', () => {

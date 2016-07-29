@@ -8,7 +8,7 @@ import udf from './udf';
 import proxy from './proxy';
 
 require('babel-polyfill');
-require('../styles/style.scss');
+require('../scss/style.scss');
 
 window.$ = $;
 window.jQuery = $;
