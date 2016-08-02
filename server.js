@@ -4,6 +4,7 @@ const http = require('http');
 
 const webpack = require('webpack');
 const webpackConfig = require('./webpack.config');
+
 const compiler = webpack(webpackConfig);
 
 const app = express();

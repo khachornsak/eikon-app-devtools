@@ -15,7 +15,6 @@ module.exports = function karmaConfig(config) {
     frameworks: ['mocha'],
 
     files: [
-      'tests/test-init.js',
       'tests/specs/**/*.js',
     ],
 
