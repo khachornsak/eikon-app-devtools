@@ -33,7 +33,7 @@ module.exports = function (options) {
   var customUrlRegExp;
   var socket;
 
-  socket = socketClient.connect(options.socketUrl || 'http://localhost:3000');
+  socket = socketClient.connect(_.get(options, 'socketUrl') || 'http://localhost:3000');
   socket.on('udf-response', _.partial(onResponse, options));
   socket.on('proxy-response', _.partial(onResponse, options));
 
