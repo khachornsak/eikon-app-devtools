@@ -1,9 +1,6 @@
-bower_components
 node_modules
 npm-debug.log
 dist
-records.json
-stats.json
 
 tests/reports
 coverage

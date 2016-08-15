@@ -4,54 +4,21 @@
 
 'use strict';
 
-let path = require('path');
-
-let babelConfig = { presets: ['es2015'] };
-
-module.exports = function karmaConfig(config) {
+module.exports = function (config) {
   config.set({
     basePath: '',
 
-    frameworks: ['mocha'],
+    frameworks: ['browserify', 'mocha', 'chai'],
 
     files: [
-      'tests/specs/**/*.js',
+      'tests/specs/*.js',
     ],
 
     preprocessors: {
-      'tests/test-init.js': 'webpack',
-      'tests/specs/**/*.js': 'webpack',
+      'tests/specs/*.js': 'browserify',
     },
 
-    webpack: {
-      babel: babelConfig,
-      isparta: { embedSource: true, noAutoWrap: true, babel: babelConfig },
-      module: {
-        preLoaders: [
-          {
-            test: /\.js$/,
-            exclude: [path.resolve('node_modules/'), path.resolve('modules/')],
-            loader: 'babel',
-          },
-          {
-            test: /\.js$/,
-            include: [path.resolve('app/js/'), path.resolve('modules/')],
-            loader: 'isparta',
-          },
-        ],
-      },
-    },
-    webpackMiddleware: { stats: { colors: true }, quiet: true },
-
-    reporters: ['dots', 'html', 'coverage'],
-
-    coverageReporter: {
-      reporters: [
-        { type: 'html', subdir: '' },
-        { type: 'text-summary', subdir: '.' },
-        { type: 'lcovonly', subdir: '.' },
-      ],
-    },
+    reporters: ['dots', 'html'],
 
     htmlReporter: {
       outputFile: 'tests/reports/unit-tests.html',

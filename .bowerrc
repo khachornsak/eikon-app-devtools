@@ -1,4 +1,0 @@
-{
-  "proxy": "http://webproxy.int.westgroup.com:80/",
-  "https-proxy": "http://webproxy.int.westgroup.com:80/"
-}

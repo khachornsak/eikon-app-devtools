@@ -1,2 +1,2 @@
-module.exports = require('./modules/server');
-module.exports.proxy = require('./modules/proxy');
+module.exports = require('./src/server');
+module.exports.proxy = require('./src/proxy');

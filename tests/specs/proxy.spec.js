@@ -1,13 +1,12 @@
-import _ from 'lodash';
-import { expect } from 'chai';
+var _ = require('lodash');
 
-import proxy from '../../../modules/proxy';
+var proxy = require('../../src/proxy');
 
-describe('Modules', () => {
-  describe('Proxy', () => {
-    it('setHTTPResponseHeaders', () => {
-      let headers = {};
-      let response = { setHeader(a, b) { headers[a] = b; } };
+describe('Modules', function () {
+  describe('Proxy', function () {
+    it('setHTTPResponseHeaders', function () {
+      var headers = {};
+      var response = { setHeader: function (a, b) { headers[a] = b; } };
       proxy.setHTTPResponseHeaders(response, {
         'access-control-allow-origin': '*',
         'cache-control': 'private, no-cache',

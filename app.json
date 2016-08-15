@@ -1,8 +1,0 @@
-{
-  "name": "eikon-app-devtools",
-  "version": "0.1.2",
-  "type": "WebApp",
-  "displayName": "Eikon App Devtools",
-  "description": "Eikon App Devtools",
-  "defaultPlatform": "NodeJS"
-}

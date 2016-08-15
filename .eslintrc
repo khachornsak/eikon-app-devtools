@@ -1,12 +1,13 @@
-extends: "airbnb-base"
+extends: airbnb-base
+env:
+  node: true
 rules:
-  no-cond-assign: 0
+  func-names: off
+  no-cond-assign: off
   no-console: [warn, { allow: [warn, error] }]
-  no-param-reassign: 0
-  prefer-const: 0
-  import/no-extraneous-dependencies: [error, { devDependencies: true }]
-globals:
-  Blob: false
-  JET: false
-  saveAs: false
-  window: false
+  no-param-reassign: off
+  no-var: off
+  prefer-arrow-callback: off
+  object-shorthand: off
+  prefer-const: off
+  prefer-template: off
