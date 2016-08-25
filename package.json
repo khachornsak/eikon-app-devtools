@@ -1,9 +1,8 @@
 {
   "name": "eikon-app-devtools",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "repository": "https://github.com/pirasis-l/eikon-app-devtools",
-  "license": "UNLICENSED",
   "files": [
     "index.js",
     "src/"
