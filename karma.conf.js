@@ -4,6 +4,8 @@
 
 'use strict';
 
+const istanbul = require('browserify-istanbul');
+
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -18,13 +20,25 @@ module.exports = function (config) {
       'tests/specs/*.js': 'browserify',
     },
 
-    reporters: ['dots', 'html'],
+    browserify: {
+      debug: true,
+      transform: [
+        [istanbul, { ignore: ['**/node_modules/**', '**/tests/**'] }],
+      ],
+    },
+
+    reporters: ['dots', 'html', 'coverage'],
 
     htmlReporter: {
       outputFile: 'tests/reports/unit-tests.html',
 
       groupSuites: true,
       useCompactStyle: true,
+    },
+
+    coverageReporter: {
+      type: 'html',
+      dir: 'coverage/',
     },
 
     port: 9876,
