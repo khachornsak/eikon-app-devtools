@@ -4,6 +4,10 @@ var socketClient = require('socket.io-client');
 
 var responseMap = {};
 
+function checkQuiet(options) {
+  return _.get(options, 'quiet') !== false;
+}
+
 function setHTTPResponseHeaders(response, headers) {
   _.chain(headers)
     .omitBy(function (v, k) { return /^access|^content/i.test(k); })
@@ -13,14 +17,29 @@ function setHTTPResponseHeaders(response, headers) {
     .commit();
 }
 
+function log(type, msg, shouldNotLog) {
+  if (!shouldNotLog) {
+    console.log(chalk.green('EAD'), type, msg);
+  }
+}
+
 function onResponse(options, id, headers, response) {
-  var res = responseMap[id];
-  if (!res) return;
+  var isQuiet = checkQuiet(options);
+  var reqres = responseMap[id];
+  var req;
+  var res;
+
+  if (!reqres) return;
   delete responseMap[id];
+
+  req = reqres.req;
+  res = reqres.res;
 
   if (_.get(options, 'headers') !== false) {
     setHTTPResponseHeaders(res, headers);
   }
+
+  log('res', req.url, isQuiet);
 
   if (res.send) {
     res.send(response);
@@ -30,6 +49,7 @@ function onResponse(options, id, headers, response) {
 }
 
 module.exports = function (options) {
+  var isQuiet = checkQuiet(options);
   var customUrlRegExp;
   var socket;
 
@@ -67,7 +87,8 @@ module.exports = function (options) {
       }
 
       id = _.uniqueId('udf');
-      responseMap[id] = res;
+      responseMap[id] = { req: req, res: res };
+      log('req', req.url, isQuiet);
       socket.emit('udf-request', {
         id: id,
         url: url,
@@ -92,7 +113,8 @@ module.exports = function (options) {
 
     if (_.some(regExps, testRegExp) || (customUrlRegExp && customUrlRegExp.test(url))) {
       id = _.uniqueId('service');
-      responseMap[id] = res;
+      responseMap[id] = { req: req, res: res };
+      log('req', req.url, isQuiet);
       if (method === 'POST') {
         socket.emit('proxy-request-post', { id: id, url: url, headers: headers, data: body });
       } else {
