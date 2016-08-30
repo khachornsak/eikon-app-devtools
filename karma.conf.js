@@ -8,7 +8,7 @@ module.exports = function (config) {
   config.set({
     basePath: '',
 
-    frameworks: ['browserify', 'mocha', 'chai'],
+    frameworks: ['browserify', 'mocha'],
 
     files: [
       'tests/specs/*.js',

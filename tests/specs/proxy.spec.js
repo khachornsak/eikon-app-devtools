@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var expect = require('chai').expect;
 
 var proxy = require('../../src/proxy');
 
