@@ -1,6 +1,8 @@
 # Change Log
 
 ## Unreleased
+### Added
+- provide ability to set specific port for websocket
 
 ## 0.1.1 - 2016-08-25
 ### Added

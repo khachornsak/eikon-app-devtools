@@ -2,11 +2,11 @@ var _ = require('lodash');
 var http = require('http');
 var socketio = require('socket.io');
 
-module.exports = function () {
+module.exports = function (options) {
   var events;
   var server = new http.Server();
   var io = socketio(server);
-  var port = 3000;
+  var port = _.get(options, 'port') || 3000;
 
   server.listen(port);
 
