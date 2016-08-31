@@ -54,6 +54,15 @@ module.exports = function (options) {
   var isQuiet = checkQuiet(options);
   var customUrlRegExp;
   var socket;
+  var eventName;
+  var params;
+  var urlMapping = (options && options.urlMapping) || [];
+  urlMapping = _.isArray(urlMapping) ? urlMapping : [];
+  urlMapping = _.chain(urlMapping)
+    .filter(function (m) { return _.isArray(m); })
+    .filter(function (m) { return _.isRegExp(m[0]) || (_.isString(m[0]) && m[0]); })
+    .filter(function (m) { return _.isString(m[1]); })
+    .value();
 
   socket = socketClient.connect(_.get(options, 'socketUrl') || 'http://localhost:3000');
   socket.on('udf-response', _.partial(onResponse, options));
@@ -73,6 +82,7 @@ module.exports = function (options) {
     var errorMessage;
     var regExps;
     var testRegExp;
+    var match;
 
     var lurl = url.toLowerCase();
     if (/\.js$/.test(url)) {
@@ -116,12 +126,21 @@ module.exports = function (options) {
     if (_.some(regExps, testRegExp) || (customUrlRegExp && customUrlRegExp.test(url))) {
       id = _.uniqueId('service');
       responseMap[id] = { req: req, res: res };
-      log('req', req.url, isQuiet);
-      if (method === 'POST') {
-        socket.emit('proxy-request-post', { id: id, url: url, headers: headers, data: body });
-      } else {
-        socket.emit('proxy-request-get', { id: id, url: url, headers: headers, data: query });
+      log('req', url, isQuiet);
+
+      match = _.find(urlMapping, function (m) {
+        var matcher = m[0];
+        return _.isRegExp(matcher) ? matcher.test(url) : _.includes(url, matcher);
+      });
+
+      if (match) {
+        url = url.replace(match[0], match[1]);
       }
+
+      eventName = method === 'POST' ? 'proxy-request-post' : 'proxy-request-get';
+      params = { id: id, url: url, headers: headers };
+      params.data = method === 'POST' ? body : query;
+      socket.emit(eventName, params);
       return;
     }
 
