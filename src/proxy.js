@@ -19,7 +19,9 @@ function setHTTPResponseHeaders(response, headers) {
 
 function log(type, msg, shouldNotLog) {
   if (!shouldNotLog) {
+    /* eslint-disable no-console */
     console.log(chalk.green('EAD'), type, msg);
+    /* eslint-enable */
   }
 }
 
