@@ -1,12 +1,14 @@
-var _ = require('lodash');
-var http = require('http');
-var socketio = require('socket.io');
+'use strict';
 
-module.exports = function (options) {
-  var events;
-  var server = new http.Server();
-  var io = socketio(server);
-  var port = _.get(options, 'port') || 3000;
+let _ = require('lodash');
+let http = require('http');
+let socketio = require('socket.io');
+
+module.exports = (options) => {
+  let events;
+  let server = new http.Server();
+  let io = socketio(server);
+  let port = _.get(options, 'port') || 3000;
 
   server.listen(port);
 
@@ -38,9 +40,9 @@ module.exports = function (options) {
     'proxy-response',
   ];
 
-  io.on('connection', function (socket) {
-    _.forEach(events, function (e) {
-      socket.on(e, function (p1, p2, p3, p4, p5) {
+  io.on('connection', (socket) => {
+    _.forEach(events, (e) => {
+      socket.on(e, (p1, p2, p3, p4, p5) => {
         socket.broadcast.emit(e, p1, p2, p3, p4, p5);
       });
     });

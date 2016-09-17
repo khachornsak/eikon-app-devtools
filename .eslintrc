@@ -2,12 +2,7 @@ extends: airbnb-base
 env:
   node: true
 rules:
-  func-names: off
-  no-cond-assign: off
   no-console: [warn, { allow: [warn, error] }]
-  no-param-reassign: off
-  no-var: off
-  prefer-arrow-callback: off
   object-shorthand: off
   prefer-const: off
-  prefer-template: off
+  strict: off

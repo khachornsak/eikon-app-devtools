@@ -1,8 +1,10 @@
-var _ = require('lodash');
-var chalk = require('chalk');
-var socketClient = require('socket.io-client');
+'use strict';
 
-var responseMap = {};
+let _ = require('lodash');
+let chalk = require('chalk');
+let socketClient = require('socket.io-client');
+
+let responseMap = {};
 
 function checkQuiet(options) {
   return _.get(options, 'quiet') !== false;
@@ -10,8 +12,8 @@ function checkQuiet(options) {
 
 function setHTTPResponseHeaders(response, headers) {
   _.chain(headers)
-    .omitBy(function (v, k) { return /^access|^content/i.test(k); })
-    .forEach(function (v, k) {
+    .omitBy((v, k) => /^access|^content/i.test(k))
+    .forEach((v, k) => {
       response.setHeader(k, v);
     })
     .commit();
@@ -26,10 +28,10 @@ function log(type, msg, shouldNotLog) {
 }
 
 function onResponse(options, id, headers, response) {
-  var isQuiet = checkQuiet(options);
-  var reqres = responseMap[id];
-  var req;
-  var res;
+  let isQuiet = checkQuiet(options);
+  let reqres = responseMap[id];
+  let req;
+  let res;
 
   if (!reqres) return;
   delete responseMap[id];
@@ -50,18 +52,18 @@ function onResponse(options, id, headers, response) {
   }
 }
 
-module.exports = function (options) {
-  var isQuiet = checkQuiet(options);
-  var customUrlRegExp;
-  var socket;
-  var eventName;
-  var params;
-  var urlMapping = (options && options.urlMapping) || [];
+module.exports = (options) => {
+  let isQuiet = checkQuiet(options);
+  let customUrlRegExp;
+  let socket;
+  let eventName;
+  let params;
+  let urlMapping = (options && options.urlMapping) || [];
   urlMapping = _.isArray(urlMapping) ? urlMapping : [];
   urlMapping = _.chain(urlMapping)
-    .filter(function (m) { return _.isArray(m); })
-    .filter(function (m) { return _.isRegExp(m[0]) || (_.isString(m[0]) && m[0]); })
-    .filter(function (m) { return _.isString(m[1]); })
+    .filter(m => _.isArray(m))
+    .filter(m => _.isRegExp(m[0]) || (_.isString(m[0]) && m[0]))
+    .filter(m => _.isString(m[1]))
     .value();
 
   socket = socketClient.connect(_.get(options, 'socketUrl') || 'http://localhost:3000');
@@ -71,20 +73,20 @@ module.exports = function (options) {
   customUrlRegExp = _.get(options, 'customUrlRegExp');
   if (!_.isRegExp(customUrlRegExp)) customUrlRegExp = null;
 
-  return function (req, res, next) {
-    var body = req.body;
-    var headers = req.headers;
-    var method = req.method;
-    var query = req.query;
-    var url = req.url;
+  return (req, res, next) => {
+    let body = req.body;
+    let headers = req.headers;
+    let method = req.method;
+    let query = req.query;
+    let url = req.url;
 
-    var id;
-    var errorMessage;
-    var regExps;
-    var testRegExp;
-    var match;
+    let id;
+    let errorMessage;
+    let regExps;
+    let testRegExp;
+    let match;
 
-    var lurl = url.toLowerCase();
+    let lurl = url.toLowerCase();
     if (/\.js$/.test(url)) {
       next();
       return;
@@ -119,17 +121,15 @@ module.exports = function (options) {
       /AjaxHandler/i,
       /\.ashx/i,
     ];
-    testRegExp = function (reg) {
-      return reg.test(url);
-    };
+    testRegExp = reg => reg.test(url);
 
     if (_.some(regExps, testRegExp) || (customUrlRegExp && customUrlRegExp.test(url))) {
       id = _.uniqueId('service');
       responseMap[id] = { req: req, res: res };
       log('req', url, isQuiet);
 
-      match = _.find(urlMapping, function (m) {
-        var matcher = m[0];
+      match = _.find(urlMapping, (m) => {
+        let matcher = m[0];
         return _.isRegExp(matcher) ? matcher.test(url) : _.includes(url, matcher);
       });
 
