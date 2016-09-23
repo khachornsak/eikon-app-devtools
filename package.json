@@ -1,6 +1,6 @@
 {
   "name": "eikon-app-devtools",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "main": "index.js",
   "repository": "https://github.com/pirasis-l/eikon-app-devtools",
   "files": [

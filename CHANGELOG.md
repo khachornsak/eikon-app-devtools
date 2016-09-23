@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.2.0 - 2016-09-23
+### Added
+- warn user when port is in use
+- drop support of NodeJs version < 4
+
 ## 0.1.2 - 2016-09-01
 ### Added
 - provide ability to set specific port for web-socket
