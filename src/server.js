@@ -1,6 +1,7 @@
 'use strict';
 
 let _ = require('lodash');
+let chalk = require('chalk');
 let http = require('http');
 let socketio = require('socket.io');
 
@@ -8,9 +9,24 @@ module.exports = (options) => {
   let events;
   let server = new http.Server();
   let io = socketio(server);
-  let port = _.get(options, 'port') || 3000;
+  let defaultPort = 3000;
+  let port = _.get(options, 'port');
+  if (!Number.isInteger(port)) port = defaultPort;
 
   server.listen(port);
+  server.on('error', (e) => {
+    if (e.code === 'EADDRINUSE') {
+      if (port === defaultPort) {
+        console.error(chalk.red('EAD: another instance of EAD maybe is in use, please close it first or try to use other port'));
+      } else {
+        console.error(chalk.red(`EAD: port ${port} is in use, try other port`));
+      }
+
+      return;
+    }
+
+    throw e;
+  });
 
   events = [
     'download',
