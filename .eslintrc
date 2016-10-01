@@ -3,6 +3,5 @@ env:
   node: true
 rules:
   no-console: [warn, { allow: [warn, error] }]
-  object-shorthand: off
   prefer-const: off
   strict: off

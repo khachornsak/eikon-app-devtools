@@ -101,12 +101,12 @@ module.exports = (options) => {
       }
 
       id = _.uniqueId('udf');
-      responseMap[id] = { req: req, res: res };
+      responseMap[id] = { req, res };
       log('req', req.url, isQuiet);
       socket.emit('udf-request', {
-        id: id,
-        url: url,
-        headers: headers,
+        id,
+        url,
+        headers,
         data: body,
         options: _.get(options, 'udf') || null,
       });
@@ -125,7 +125,7 @@ module.exports = (options) => {
 
     if (_.some(regExps, testRegExp) || (customUrlRegExp && customUrlRegExp.test(url))) {
       id = _.uniqueId('service');
-      responseMap[id] = { req: req, res: res };
+      responseMap[id] = { req, res };
       log('req', url, isQuiet);
 
       match = _.find(urlMapping, (m) => {
@@ -138,7 +138,7 @@ module.exports = (options) => {
       }
 
       eventName = method === 'POST' ? 'proxy-request-post' : 'proxy-request-get';
-      params = { id: id, url: url, headers: headers };
+      params = { id, url, headers };
       params.data = method === 'POST' ? body : query;
       socket.emit(eventName, params);
       return;
