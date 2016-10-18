@@ -52,8 +52,8 @@ module.exports = (opts) => {
 
   io.on('connection', (socket) => {
     events.forEach((e) => {
-      socket.on(e, (...args) => {
-        socket.broadcast.emit(e, ...args);
+      socket.on(e, (p1, p2, p3, p4, p5) => {
+        socket.broadcast.emit(e, p1, p2, p3, p4, p5);
       });
     });
   });
