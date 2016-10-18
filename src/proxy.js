@@ -30,14 +30,11 @@ function log(type, msg, shouldNotLog) {
 function onResponse(options, id, headers, response) {
   let isQuiet = checkQuiet(options);
   let reqres = responseMap[id];
-  let req;
-  let res;
 
   if (!reqres) return;
   delete responseMap[id];
 
-  req = reqres.req;
-  res = reqres.res;
+  let { req, res } = reqres;
 
   if (_.get(options, 'headers') !== false) {
     setHTTPResponseHeaders(res, headers);
@@ -52,39 +49,29 @@ function onResponse(options, id, headers, response) {
   }
 }
 
-module.exports = (options) => {
+module.exports = (opts) => {
+  const options = opts || {};
+
+  let { urlMapping, customUrlRegExp } = options;
+
   let isQuiet = checkQuiet(options);
-  let customUrlRegExp;
   let socket;
   let eventName;
-  let params;
-  let urlMapping = (options && options.urlMapping) || [];
   urlMapping = _.isArray(urlMapping) ? urlMapping : [];
   urlMapping = _.chain(urlMapping)
     .filter(m => _.isArray(m))
-    .filter(m => _.isRegExp(m[0]) || (_.isString(m[0]) && m[0]))
+    .filter(([matcher]) => matcher && (_.isRegExp(matcher) || _.isString(matcher)))
     .filter(m => _.isString(m[1]))
     .value();
 
-  socket = socketClient.connect(_.get(options, 'socketUrl') || 'http://localhost:3000');
+  socket = socketClient.connect(options.socketUrl || 'http://localhost:3000');
   socket.on('udf-response', _.partial(onResponse, options));
   socket.on('proxy-response', _.partial(onResponse, options));
 
-  customUrlRegExp = _.get(options, 'customUrlRegExp');
   if (!_.isRegExp(customUrlRegExp)) customUrlRegExp = null;
 
   return (req, res, next) => {
-    let body = req.body;
-    let headers = req.headers;
-    let method = req.method;
-    let query = req.query;
-    let url = req.url;
-
-    let id;
-    let errorMessage;
-    let regExps;
-    let testRegExp;
-    let match;
+    let { body, headers, method, query, url } = req;
 
     let lurl = url.toLowerCase();
     if (/\.js$/.test(url)) {
@@ -92,15 +79,15 @@ module.exports = (options) => {
       return;
     }
 
-    if (_.startsWith(lurl, '/apps/udf/msf')) {
+    if (lurl.startsWith('/apps/udf/msf')) {
       if (!body || _.isEmpty(body)) {
-        errorMessage = 'EAD: Body of MSF request is empty. Forget to config "body-parser"?';
+        let errorMessage = 'EAD: Body of MSF request is empty. Forget to config "body-parser"?';
         console.warn(chalk.red(errorMessage));
         next();
         return;
       }
 
-      id = _.uniqueId('udf');
+      let id = _.uniqueId('udf');
       responseMap[id] = { req, res };
       log('req', req.url, isQuiet);
       socket.emit('udf-request', {
@@ -108,12 +95,12 @@ module.exports = (options) => {
         url,
         headers,
         data: body,
-        options: _.get(options, 'udf') || null,
+        options: options.udf || null,
       });
       return;
     }
 
-    regExps = [
+    let regExps = [
       /service/i,
       /^\/ta/i,
       /^\/Explorer/,
@@ -121,24 +108,23 @@ module.exports = (options) => {
       /AjaxHandler/i,
       /\.ashx/i,
     ];
-    testRegExp = reg => reg.test(url);
+    let testRegExp = reg => reg.test(url);
 
     if (_.some(regExps, testRegExp) || (customUrlRegExp && customUrlRegExp.test(url))) {
-      id = _.uniqueId('service');
+      let id = _.uniqueId('service');
       responseMap[id] = { req, res };
       log('req', url, isQuiet);
 
-      match = _.find(urlMapping, (m) => {
-        let matcher = m[0];
-        return _.isRegExp(matcher) ? matcher.test(url) : _.includes(url, matcher);
-      });
+      let match = _.find(urlMapping, ([matcher]) =>
+        (_.isRegExp(matcher) ? matcher.test(url) : url.includes(matcher))
+      );
 
       if (match) {
         url = url.replace(match[0], match[1]);
       }
 
       eventName = method === 'POST' ? 'proxy-request-post' : 'proxy-request-get';
-      params = { id, url, headers };
+      let params = { id, url, headers };
       params.data = method === 'POST' ? body : query;
       socket.emit(eventName, params);
       return;
