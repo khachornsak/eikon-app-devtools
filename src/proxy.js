@@ -34,7 +34,8 @@ function onResponse(options, id, headers, response) {
   if (!reqres) return;
   delete responseMap[id];
 
-  let { req, res } = reqres;
+  let req = reqres.req;
+  let res = reqres.res;
 
   if (_.get(options, 'headers') !== false) {
     setHTTPResponseHeaders(res, headers);
@@ -52,7 +53,8 @@ function onResponse(options, id, headers, response) {
 module.exports = (opts) => {
   const options = opts || {};
 
-  let { urlMapping, customUrlRegExp } = options;
+  let urlMapping = options.urlMapping;
+  let customUrlRegExp = options.customUrlRegExp;
 
   let isQuiet = checkQuiet(options);
   let socket;
@@ -60,7 +62,7 @@ module.exports = (opts) => {
   urlMapping = _.isArray(urlMapping) ? urlMapping : [];
   urlMapping = _.chain(urlMapping)
     .filter(m => _.isArray(m))
-    .filter(([matcher]) => matcher && (_.isRegExp(matcher) || _.isString(matcher)))
+    .filter(m => m[0] && (_.isRegExp(m[0]) || _.isString(m[0])))
     .filter(m => _.isString(m[1]))
     .value();
 
@@ -71,7 +73,11 @@ module.exports = (opts) => {
   if (!_.isRegExp(customUrlRegExp)) customUrlRegExp = null;
 
   return (req, res, next) => {
-    let { body, headers, method, query, url } = req;
+    let body = req.body;
+    let headers = req.headers;
+    let method = req.method;
+    let query = req.query;
+    let url = req.url;
 
     let lurl = url.toLowerCase();
     if (/\.js$/.test(url)) {
@@ -115,9 +121,7 @@ module.exports = (opts) => {
       responseMap[id] = { req, res };
       log('req', url, isQuiet);
 
-      let match = _.find(urlMapping, ([matcher]) =>
-        (_.isRegExp(matcher) ? matcher.test(url) : url.includes(matcher))
-      );
+      let match = _.find(urlMapping, m => (_.isRegExp(m[0]) ? m[0].test(url) : url.includes(m[0])));
 
       if (match) {
         url = url.replace(match[0], match[1]);
