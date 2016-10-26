@@ -1,11 +1,14 @@
 /* eslint-disable
-  no-console
+  no-console,
 */
 
 function jetmock(socket) {
   if (navigator.userAgent.indexOf('EikonViewer') === -1) {
     socket.emit('quotes-reset');
+
     Object.assign(window.JET, {
+      Initialized: true,
+
       onLoad(fn) {
         fn.apply(null);
       },
@@ -37,18 +40,17 @@ function jetmock(socket) {
         socket.emit('subscribe', channel);
       },
 
-      appHit() {
-        return;
-      },
+      unsubscribe() {},
+
+      appHit() {},
 
       Quotes: {
         create() {
-          let id;
-          let subscription;
-
-          id = `${parseInt(Math.random() * 1000, 10)}_${Date.now()}`;
+          let id = `${parseInt(Math.random() * 1000, 10)}_${Date.now()}`;
           socket.emit('quotes-create', id);
-          subscription = {
+
+          let cache = {};
+          let subscription = {
             start() {
               socket.emit('quotes-start', id);
               return subscription;
@@ -59,17 +61,20 @@ function jetmock(socket) {
               return subscription;
             },
 
-            destroy() {
-            },
+            destroy() {},
 
             rics(rics) {
               socket.emit('quotes-rics', id, rics);
               return subscription;
             },
 
-            formattedFields(f) {
-              socket.emit('quotes-formattedFields', id, f);
+            formattedFields(f, v) {
+              socket.emit('quotes-formattedFields', id, f, v);
               return subscription;
+            },
+
+            getFieldsValues(ric) {
+              return cache[ric];
             },
 
             rawFields(f) {
@@ -77,12 +82,29 @@ function jetmock(socket) {
               return subscription;
             },
 
+            onNewRow() {
+              return subscription;
+            },
+
             onUpdate(f) {
-              socket.on('quotes-onUpdate', (key, updates, status) => {
+              socket.on('quotes-onUpdate', (key, data, values) => {
                 if (key === id) {
-                  f(subscription, updates, status);
+                  let array = values ? [[data, values]] : data;
+                  array.forEach((v) => {
+                    if (!cache[v[0]]) cache[v[0]] = {};
+                    Object.assign(cache[v[0]], v[1]);
+                    f(subscription, v[0], v[1], v[2]);
+                  });
                 }
               });
+              return subscription;
+            },
+
+            onRemoveRow() {
+              return subscription;
+            },
+
+            pauseOnDeactivate() {
               return subscription;
             },
           };
@@ -93,28 +115,22 @@ function jetmock(socket) {
 
       QuickTips: {
         create() {
-          // console.log('quicktip', 'create quicktip');
-          const qt = {};
-          Object.assign(qt, {
+          const qt = {
             tips() {
-              // console.log('quicktip', 'set tips');
               return qt;
             },
+
             start() {
-              // console.log('quicktip', 'start');
               return qt;
             },
-          });
+          };
 
           return qt;
         },
-        tipsAvailable() {
-          // console.log('quicktip', 'set tip available');
-        },
-        onQuickTipRequest() {
-          // console.log('quicktip', 'request quicktip');
-          // callback();
-        },
+
+        tipsAvailable() {},
+
+        onQuickTipRequest() {},
       },
     });
   }
