@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.0.0 - 2016-10-26
+## 1.0.1 - 2016-10-26
 ### Added
 - add client module for features like streaming or changing context
   - `require('eikon-app-devtools/src/client');`
