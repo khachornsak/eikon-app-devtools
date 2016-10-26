@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.0.0 - 2016-10-26
+### Added
+- add client module for features like streaming or changing context
+  - `require('eikon-app-devtools/src/client');`
+
 ## 0.2.0 - 2016-09-23
 ### Added
 - warn user when port is in use
