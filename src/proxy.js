@@ -4,6 +4,8 @@ let _ = require('lodash');
 let chalk = require('chalk');
 let socketClient = require('socket.io-client');
 
+let config = require('./config');
+
 let responseMap = {};
 
 function checkQuiet(options) {
@@ -66,7 +68,7 @@ module.exports = (opts) => {
     .filter(m => _.isString(m[1]))
     .value();
 
-  socket = socketClient.connect(options.socketUrl || 'http://localhost:3000');
+  socket = socketClient.connect(options.socketUrl || config.defaultSocketUrl);
   socket.on('udf-response', _.partial(onResponse, options));
   socket.on('proxy-response', _.partial(onResponse, options));
 

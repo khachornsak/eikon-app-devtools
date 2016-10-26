@@ -4,13 +4,14 @@ let chalk = require('chalk');
 let http = require('http');
 let socketio = require('socket.io');
 
+let config = require('./config');
+
 module.exports = (opts) => {
   let options = opts || {};
   let server = new http.Server();
   let io = socketio(server);
-  let defaultPort = 3000;
   let port = options.port;
-  if (!Number.isInteger(port)) port = defaultPort;
+  if (!Number.isInteger(port)) port = config.defaultPort;
 
   server.listen(port);
   server.on('error', (e) => {

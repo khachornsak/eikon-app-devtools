@@ -2,6 +2,7 @@ extends: airbnb-base
 env:
   node: true
 rules:
+  class-methods-use-this: off
   no-console: [warn, { allow: [warn, error] }]
   prefer-const: off
   strict: off
