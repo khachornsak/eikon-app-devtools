@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.0 - 2016-11-06
+### Added
+- drop support of NodeJs v4
+
 ## 1.0.1 - 2016-10-26
 ### Added
 - add client module for features like streaming or changing context

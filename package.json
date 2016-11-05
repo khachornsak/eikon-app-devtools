@@ -1,14 +1,13 @@
 {
   "name": "eikon-app-devtools",
-  "version": "1.0.1",
-  "main": "index.js",
+  "version": "2.0.0",
+  "main": "src/index.js",
   "repository": "https://github.com/pirasis-l/eikon-app-devtools",
   "files": [
-    "index.js",
     "src/"
   ],
   "scripts": {
-    "lint": "eslint index.js server.js src tests",
+    "lint": "eslint server.js src tests",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha -- tests",
     "mocha": "mocha tests --watch"
   },
