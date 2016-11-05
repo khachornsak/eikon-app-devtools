@@ -1,8 +1,6 @@
-'use strict';
+const { expect } = require('chai');
 
-let expect = require('chai').expect;
-
-let server = require('../src/server');
+const server = require('../src/server');
 
 describe('Server', () => {
   describe('General', () => {

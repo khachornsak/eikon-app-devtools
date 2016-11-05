@@ -8,7 +8,7 @@
     "src/"
   ],
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint index.js server.js src tests",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha -- tests",
     "mocha": "mocha tests --watch"
   },

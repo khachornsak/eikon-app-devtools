@@ -1,29 +1,26 @@
-let _ = require('lodash');
-let chalk = require('chalk');
-let socketClient = require('socket.io-client');
+const _ = require('lodash');
+const chalk = require('chalk');
+const socketClient = require('socket.io-client');
 
-let config = require('./config');
+const config = require('./config');
 
 let responseMap = {};
 
 function checkQuiet(options) {
-  return _.get(options, 'quiet') !== false;
+  return !options || options.quiet !== false;
 }
 
 function setHTTPResponseHeaders(response, headers) {
-  _.chain(headers)
-    .omitBy((v, k) => /^access|^content/i.test(k))
-    .forEach((v, k) => {
-      response.setHeader(k, v);
-    })
-    .commit();
+  Object.keys(headers)
+    .filter(key => !/^access|^content/i.test(key))
+    .forEach((key) => {
+      response.setHeader(key, headers[key]);
+    });
 }
 
 function log(type, msg, shouldNotLog) {
   if (!shouldNotLog) {
-    /* eslint-disable no-console */
-    console.log(chalk.green('EAD'), type, msg);
-    /* eslint-enable */
+    console.log(chalk.green('EAD'), type, msg); // eslint-disable-line
   }
 }
 
@@ -34,10 +31,9 @@ function onResponse(options, id, headers, response) {
   if (!reqres) return;
   delete responseMap[id];
 
-  let req = reqres.req;
-  let res = reqres.res;
+  let { req, res } = reqres;
 
-  if (_.get(options, 'headers') !== false) {
+  if (!options || options.headers !== false) {
     setHTTPResponseHeaders(res, headers);
   }
 
@@ -53,31 +49,23 @@ function onResponse(options, id, headers, response) {
 module.exports = (opts) => {
   const options = opts || {};
 
-  let urlMapping = options.urlMapping;
-  let customUrlRegExp = options.customUrlRegExp;
+  let { socketUrl, urlMapping, customUrlRegExp } = options;
 
   let isQuiet = checkQuiet(options);
-  let socket;
-  let eventName;
-  urlMapping = _.isArray(urlMapping) ? urlMapping : [];
-  urlMapping = _.chain(urlMapping)
-    .filter(m => _.isArray(m))
-    .filter(m => m[0] && (_.isRegExp(m[0]) || _.isString(m[0])))
-    .filter(m => _.isString(m[1]))
-    .value();
+  urlMapping = Array.isArray(urlMapping) ? urlMapping : [];
+  urlMapping = urlMapping
+    .filter(m => Array.isArray(m) && m.length > 1)
+    .filter(([pattern]) => _.isRegExp(pattern) || _.isString(pattern))
+    .filter(m => _.isString(m[1]));
 
-  socket = socketClient.connect(options.socketUrl || config.defaultSocketUrl);
+  let socket = socketClient.connect(socketUrl || config.defaultSocketUrl);
   socket.on('udf-response', _.partial(onResponse, options));
   socket.on('proxy-response', _.partial(onResponse, options));
 
   if (!_.isRegExp(customUrlRegExp)) customUrlRegExp = null;
 
   return (req, res, next) => {
-    let body = req.body;
-    let headers = req.headers;
-    let method = req.method;
-    let query = req.query;
-    let url = req.url;
+    let { body, headers, method, query, url } = req;
 
     let lurl = url.toLowerCase();
     if (/\.js$/.test(url)) {
@@ -114,22 +102,20 @@ module.exports = (opts) => {
       /AjaxHandler/i,
       /\.ashx/i,
     ];
-    let testRegExp = reg => reg.test(url);
 
-    if (_.some(regExps, testRegExp) || (customUrlRegExp && customUrlRegExp.test(url))) {
+    if (regExps.some(reg => reg.test(url)) || (customUrlRegExp && customUrlRegExp.test(url))) {
       let id = _.uniqueId('service');
       responseMap[id] = { req, res };
       log('req', url, isQuiet);
 
-      let match = _.find(urlMapping, m => (_.isRegExp(m[0]) ? m[0].test(url) : url.includes(m[0])));
+      let match = urlMapping.find(([p]) => (_.isRegExp(p) ? p.test(url) : url.includes(p)));
 
       if (match) {
         url = url.replace(match[0], match[1]);
       }
 
-      eventName = method === 'POST' ? 'proxy-request-post' : 'proxy-request-get';
-      let params = { id, url, headers };
-      params.data = method === 'POST' ? body : query;
+      let eventName = method === 'POST' ? 'proxy-request-post' : 'proxy-request-get';
+      let params = { id, url, headers, data: method === 'POST' ? body : query };
       socket.emit(eventName, params);
       return;
     }

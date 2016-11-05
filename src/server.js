@@ -1,11 +1,10 @@
-let chalk = require('chalk');
-let http = require('http');
-let socketio = require('socket.io');
+const chalk = require('chalk');
+const http = require('http');
+const socketio = require('socket.io');
 
-let config = require('./config');
+const config = require('./config');
 
-module.exports = (opts) => {
-  let options = opts || {};
+module.exports = (options = {}) => {
   let server = new http.Server();
   let io = socketio(server);
   let port = options.port;
@@ -51,8 +50,8 @@ module.exports = (opts) => {
 
   io.on('connection', (socket) => {
     events.forEach((e) => {
-      socket.on(e, (p1, p2, p3, p4, p5) => {
-        socket.broadcast.emit(e, p1, p2, p3, p4, p5);
+      socket.on(e, (...args) => {
+        socket.broadcast.emit(e, ...args);
       });
     });
   });
