@@ -1,5 +1,3 @@
-'use strict';
-
 let chalk = require('chalk');
 let http = require('http');
 let socketio = require('socket.io');

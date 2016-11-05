@@ -1,5 +1,3 @@
-'use strict';
-
 let _ = require('lodash');
 let chalk = require('chalk');
 let socketClient = require('socket.io-client');

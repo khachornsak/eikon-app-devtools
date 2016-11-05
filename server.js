@@ -1,5 +1,1 @@
-'use strict';
-
-let server = require('./src/server');
-
-server();
+require('./src/server')();
