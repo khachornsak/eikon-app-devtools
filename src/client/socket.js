@@ -1,4 +1,4 @@
-let SocketClient = require('socket.io-client');
+const SocketClient = require('socket.io-client');
 
 let instance = null;
 

@@ -13,10 +13,8 @@ describe('Modules', () => {
         'content-type': 'json',
       });
 
-      expect(Object.keys(headers).length, 'should set 1 header')
-        .to.equal(1);
-      expect(headers['cache-control'], 'should set cache-control if exists')
-        .to.equal('private, no-cache');
+      expect(Object.keys(headers)).to.have.lengthOf(1);
+      expect(headers['cache-control']).to.equal('private, no-cache');
     });
   });
 });

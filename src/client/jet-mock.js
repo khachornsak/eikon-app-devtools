@@ -3,7 +3,7 @@
 */
 
 function jetmock(socket) {
-  if (navigator.userAgent.indexOf('EikonViewer') === -1) {
+  if (!navigator.userAgent.includes('EikonViewer')) {
     socket.emit('quotes-reset');
 
     Object.assign(window.JET, {
@@ -30,13 +30,11 @@ function jetmock(socket) {
       },
 
       subscribe(channel, fn) {
-        (function wrapCallback(s, f) {
-          socket.on('subscribe-success', (name, result) => {
-            if (name === s) {
-              f(result, name);
-            }
-          });
-        }(channel, fn));
+        socket.on('subscribe-success', (name, result) => {
+          if (name === channel) {
+            fn(result, name);
+          }
+        });
         socket.emit('subscribe', channel);
       },
 
@@ -86,15 +84,16 @@ function jetmock(socket) {
               return subscription;
             },
 
-            onUpdate(f) {
+            onUpdate(fn, batch = false) {
               socket.on('quotes-onUpdate', (key, data, values) => {
                 if (key === id) {
                   let array = values ? [[data, values]] : data;
-                  array.forEach((v) => {
-                    if (!cache[v[0]]) cache[v[0]] = {};
-                    Object.assign(cache[v[0]], v[1]);
-                    f(subscription, v[0], v[1], v[2]);
+                  array.forEach(([ric, updates, rowN]) => {
+                    if (!cache[ric]) cache[ric] = {};
+                    Object.assign(cache[ric], updates);
+                    if (!batch) fn(subscription, ric, updates, rowN);
                   });
+                  if (batch) fn(subscription, data, values);
                 }
               });
               return subscription;
