@@ -5,3 +5,4 @@ rules:
   class-methods-use-this: off
   no-console: [warn, { allow: [warn, error] }]
   prefer-const: off
+  semi: [error, never]
