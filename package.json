@@ -19,6 +19,7 @@
     "lodash": "^4.12.0",
     "md5": "^2.1.0",
     "node-uuid": "^1.4.4",
+    "pem": "^1.9.0",
     "socket.io": "^1.4.0",
     "socket.io-client": "^1.4.0"
   },
